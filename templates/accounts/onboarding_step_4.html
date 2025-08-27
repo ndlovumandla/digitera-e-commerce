@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Complete Your Setup - Step {{ step }} of {{ total_steps }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Progress Header -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">{{ step_title }}</h1>
+                    <p class="text-gray-600">{{ step_description }}</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-medium text-gray-500">Step {{ step }} of {{ total_steps }}</div>
+                    <div class="text-2xl font-bold text-green-600">{{ progress_percentage }}%</div>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-gradient-to-r from-blue-600 to-green-600 h-3 rounded-full transition-all duration-500 w-full"></div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        {% if created_product %}
+        <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle text-green-600 text-2xl mr-4"></i>
+                <div>
+                    <h3 class="text-lg font-semibold text-green-900">Great! Your product has been created</h3>
+                    <p class="text-green-800">
+                        "{{ created_product.product_title }}" is now live and ready for customers.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Main Form -->
+        <div class="bg-white rounded-lg shadow p-8">
+            <form method="post" class="space-y-8">
+                {% csrf_token %}
+
+                <!-- Marketing Packages -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-rocket text-blue-600 mr-2"></i>
+                        Marketing Packages (Optional)
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        {% for package in marketing_packages %}
+                            <div class="border border-gray-200 rounded-lg p-6 hover:border-blue-500 transition-colors">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ package.name }}</h4>
+                                <div class="text-2xl font-bold text-blue-600 mb-4">{{ package.price }}</div>
+                                <ul class="space-y-2 mb-4">
+                                    {% for feature in package.features %}
+                                        <li class="flex items-center text-sm text-gray-600">
+                                            <i class="fas fa-check text-green-500 mr-2"></i>
+                                            {{ feature }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                <p class="text-xs text-gray-500">{{ package.ideal_for }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            {{ form.interested_in_marketing }}
+                            <label for="{{ form.interested_in_marketing.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                {{ form.interested_in_marketing.label }}
+                            </label>
+                        </div>
+                        
+                        <div id="marketing-options" class="ml-8 space-y-2" style="display: none;">
+                            {% for choice in form.marketing_package_preference %}
+                                <div class="flex items-center">
+                                    {{ choice.tag }}
+                                    <label for="{{ choice.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                        {{ choice.choice_label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Preferences -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-bell text-blue-600 mr-2"></i>
+                        Notification Preferences
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                {{ form.email_marketing }}
+                                <label for="{{ form.email_marketing.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                    {{ form.email_marketing.label }}
+                                </label>
+                            </div>
+                            <div class="flex items-center">
+                                {{ form.email_sales }}
+                                <label for="{{ form.email_sales.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                    {{ form.email_sales.label }}
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                {{ form.email_product_updates }}
+                                <label for="{{ form.email_product_updates.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                    {{ form.email_product_updates.label }}
+                                </label>
+                            </div>
+                            <div class="flex items-center">
+                                {{ form.sms_notifications }}
+                                <label for="{{ form.sms_notifications.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                    {{ form.sms_notifications.label }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goals and Expectations -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-target text-blue-600 mr-2"></i>
+                        Your Goals
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="{{ form.business_goal.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                What's your main business goal?
+                            </label>
+                            {{ form.business_goal }}
+                            {% if form.business_goal.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.business_goal.errors.0 }}</p>
+                            {% endif %}
+                            <p class="mt-1 text-xs text-gray-500">{{ form.business_goal.help_text }}</p>
+                        </div>
+
+                        <div>
+                            <label for="{{ form.expected_launch_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                When do you want to launch?
+                            </label>
+                            {{ form.expected_launch_time }}
+                            {% if form.expected_launch_time.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.expected_launch_time.errors.0 }}</p>
+                            {% endif %}
+                            <p class="mt-1 text-xs text-gray-500">{{ form.expected_launch_time.help_text }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature Interests -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-star text-blue-600 mr-2"></i>
+                        Features You're Interested In
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {% for choice in form.interested_features %}
+                            <div class="flex items-center">
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                    {{ choice.choice_label }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <p class="mt-2 text-xs text-gray-500">{{ form.interested_features.help_text }}</p>
+                </div>
+
+                <!-- Final Note -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-600 mt-1 mr-3"></i>
+                        <div>
+                            <h4 class="text-sm font-semibold text-blue-900">You're almost there!</h4>
+                            <p class="mt-2 text-sm text-blue-800">
+                                After completing this setup, you'll have access to your full creator dashboard with analytics, 
+                                product management, marketing tools, and more. You can always change these preferences later.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                    <a href="{% url 'accounts:onboarding_step_3' %}" 
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back
+                    </a>
+                    
+                    <div class="flex space-x-3">
+                        <button type="button" 
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                                onclick="skipStep()">
+                            Skip & Complete
+                        </button>
+                        <button type="submit" 
+                                class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700">
+                            Complete Setup
+                            <i class="fas fa-check ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Marketing interest toggle
+    const marketingCheckbox = document.getElementById('{{ form.interested_in_marketing.id_for_label }}');
+    const marketingOptions = document.getElementById('marketing-options');
+    
+    function toggleMarketingOptions() {
+        if (marketingCheckbox.checked) {
+            marketingOptions.style.display = 'block';
+        } else {
+            marketingOptions.style.display = 'none';
+        }
+    }
+    
+    marketingCheckbox.addEventListener('change', toggleMarketingOptions);
+    toggleMarketingOptions(); // Check initial state
+    
+    // Form submission
+    const form = document.querySelector('form');
+    const submitButton = form.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', function() {
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Completing Setup...';
+        submitButton.disabled = true;
+    });
+});
+
+function skipStep() {
+    if (confirm('Are you sure you want to skip these preferences? You can update them later from your dashboard.')) {
+        fetch('{% url "accounts:skip_onboarding_step" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect_url;
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

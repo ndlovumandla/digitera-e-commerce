@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Purchased Products - Digitera{% endblock %}
+
+{% block main_classes %}bg-gray-50{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">My Purchased Products</h1>
+            <p class="text-gray-600 mt-2">Download and access your digital products</p>
+        </div>
+        
+        <a href="{% url 'products:marketplace' %}" 
+           class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-200">
+            <i class="fas fa-shopping-bag mr-2"></i>
+            Browse More Products
+        </a>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shopping-cart text-blue-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Purchases</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_purchases }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-rand-sign text-green-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Spent</p>
+                    <p class="text-2xl font-bold text-gray-900">R{{ total_spent|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-download text-purple-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Downloads</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_downloads }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if orders %}
+    <!-- Products List -->
+    <div class="space-y-6">
+        {% for order in orders %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <!-- Order Header -->
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-6">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Order #{{ order.order_number }}</p>
+                            <p class="text-sm text-gray-600">{{ order.created_at|date:"F d, Y" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Total</p>
+                            <p class="text-sm font-medium text-gray-900">R{{ order.total_amount|floatformat:2 }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <a href="{% url 'orders:detail' order.id %}" 
+                           class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            View Order Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products -->
+            <div class="p-6">
+                <div class="space-y-4">
+                    {% for item in order.items.all %}
+                    <div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                        <div class="flex-shrink-0">
+                            {% if item.product.featured_image %}
+                            <img src="{{ item.product.featured_image }}" alt="{{ item.product.name }}" 
+                                 class="w-20 h-20 object-cover rounded-lg">
+                            {% else %}
+                            <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-file-alt text-2xl text-gray-400"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-lg font-medium text-gray-900 truncate">
+                                <a href="{% url 'products:detail' item.product.id %}" class="hover:text-blue-600">
+                                    {{ item.product.name }}
+                                </a>
+                            </h4>
+                            <p class="text-sm text-gray-600">{{ item.product.short_description|truncatechars:100 }}</p>
+                            <div class="flex items-center space-x-4 mt-2">
+                                <span class="text-sm text-gray-600">by {{ item.product.creator.get_full_name|default:item.product.creator.email }}</span>
+                                <span class="text-sm font-medium text-gray-900">R{{ item.total_price|floatformat:2 }}</span>
+                            </div>
+                            
+                            {% if item.access_granted %}
+                            <div class="flex items-center space-x-2 mt-3">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Access Granted
+                                </span>
+                                
+                                {% if item.download_limit %}
+                                <span class="text-xs text-gray-500">
+                                    Downloads: {{ item.download_count|default:0 }}/{{ item.download_limit }}
+                                </span>
+                                {% else %}
+                                <span class="text-xs text-gray-500">
+                                    Downloads: {{ item.download_count|default:0 }}/∞
+                                </span>
+                                {% endif %}
+                                
+                                {% if item.access_expires_at %}
+                                <span class="text-xs text-gray-500">
+                                    Expires: {{ item.access_expires_at|date:"M d, Y" }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex flex-col items-end space-y-2">
+                            {% if item.access_granted %}
+                                {% if item.download_limit and item.download_count >= item.download_limit %}
+                                <span class="text-sm text-red-600 font-medium">Download limit reached</span>
+                                {% elif item.access_expires_at and item.access_expires_at < now %}
+                                <span class="text-sm text-red-600 font-medium">Access expired</span>
+                                {% else %}
+                                <a href="{% url 'orders:download_product' item.id %}" 
+                                   class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200 text-sm font-medium">
+                                    <i class="fas fa-download mr-1"></i>
+                                    Download
+                                </a>
+                                {% endif %}
+                            {% else %}
+                            <span class="text-sm text-gray-500">Processing...</span>
+                            {% endif %}
+                            
+                            <a href="{% url 'products:detail' item.product.id %}" 
+                               class="text-blue-600 hover:text-blue-800 text-sm">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if orders.has_other_pages %}
+    <div class="flex items-center justify-center space-x-2 mt-8">
+        {% if orders.has_previous %}
+        <a href="?page={{ orders.previous_page_number }}" 
+           class="px-3 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+        
+        {% for num in orders.paginator.page_range %}
+        {% if orders.number == num %}
+        <span class="px-4 py-2 bg-blue-600 text-white rounded-md">{{ num }}</span>
+        {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+        <a href="?page={{ num }}" 
+           class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+            {{ num }}
+        </a>
+        {% endif %}
+        {% endfor %}
+        
+        {% if orders.has_next %}
+        <a href="?page={{ orders.next_page_number }}" 
+           class="px-3 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-16">
+        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-download text-3xl text-blue-600"></i>
+        </div>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">No purchased products yet</h3>
+        <p class="text-gray-600 mb-6">Start exploring our marketplace and discover amazing digital products from South African creators.</p>
+        <a href="{% url 'products:marketplace' %}" 
+           class="inline-block bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-200">
+            <i class="fas fa-search mr-2"></i>
+            Browse Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Download Modal -->
+<div id="download-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Download Started</h3>
+                <button onclick="closeDownloadModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-gray-600">Your download should start automatically. If it doesn't, click the button below.</p>
+            </div>
+            
+            <div class="flex items-center justify-end space-x-3">
+                <button onclick="closeDownloadModal()" 
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    Close
+                </button>
+                <a id="manual-download-link" href="#" 
+                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    Download Manually
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showDownloadModal(downloadUrl) {
+    document.getElementById('manual-download-link').href = downloadUrl;
+    document.getElementById('download-modal').classList.remove('hidden');
+    
+    // Auto-close after 5 seconds
+    setTimeout(function() {
+        closeDownloadModal();
+    }, 5000);
+}
+
+function closeDownloadModal() {
+    document.getElementById('download-modal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.getElementById('download-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDownloadModal();
+    }
+});
+</script>
+{% endblock %}

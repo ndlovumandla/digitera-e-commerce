@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - Digitera{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">Checkout</h1>
+            <p class="text-gray-600 mt-2">Complete your purchase securely</p>
+        </div>
+
+        <form method="post" id="checkout-form">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Billing Information -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Customer Information -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Customer Information</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="billing_name" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                                <input type="text" id="billing_name" name="billing_name" required
+                                       value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}"
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="billing_email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                                <input type="email" id="billing_email" name="billing_email" required
+                                       value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="billing_phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                <input type="tel" id="billing_phone" name="billing_phone"
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Payment Method</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <input type="radio" id="card" name="payment_method" value="card" checked
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <label for="card" class="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                                    <span>Credit/Debit Card</span>
+                                    <div class="flex space-x-1">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" class="h-6">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" class="h-6">
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <input type="radio" id="eft" name="payment_method" value="eft"
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <label for="eft" class="text-sm font-medium text-gray-700">EFT / Bank Transfer</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Card Details (shown by default) -->
+                        <div id="card-details" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label for="card_number" class="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
+                                <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456"
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="expiry" class="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+                                <input type="text" id="expiry" name="expiry" placeholder="MM/YY"
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="cvv" class="block text-sm font-medium text-gray-700 mb-2">CVV</label>
+                                <input type="text" id="cvv" name="cvv" placeholder="123"
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                        
+                        <!-- EFT Details (hidden by default) -->
+                        <div id="eft-details" class="mt-6 hidden">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h3 class="font-medium text-blue-900 mb-2">Bank Transfer Instructions</h3>
+                                <p class="text-sm text-blue-800">After placing your order, you'll receive detailed banking information to complete your payment via EFT. Your order will be processed once payment is confirmed.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Terms and Conditions -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="terms" name="terms" required
+                                   class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="terms" class="text-sm text-gray-700">
+                                I agree to the <a href="{% url 'terms' %}" class="text-blue-600 hover:text-blue-800">Terms and Conditions</a> 
+                                and <a href="{% url 'privacy' %}" class="text-blue-600 hover:text-blue-800">Privacy Policy</a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Summary -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
+                        
+                        <!-- Items -->
+                        <div class="space-y-3 mb-4">
+                            {% for item in cart_items %}
+                            <div class="flex justify-between items-start">
+                                <div class="flex-grow min-w-0 pr-3">
+                                    <p class="text-sm font-medium text-gray-900 truncate">{{ item.product.name }}</p>
+                                    <p class="text-xs text-gray-500">Qty: {{ item.quantity }}</p>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900">R{{ item.total_price }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="border-t border-gray-200 pt-4 space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal</span>
+                                <span class="font-medium">R{{ total_amount }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">VAT (15%)</span>
+                                <span class="font-medium">R{% widthratio total_amount 100 15 %}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Platform Fee (5%)</span>
+                                <span class="font-medium">R{% widthratio total_amount 100 5 %}</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-3">
+                                <div class="flex justify-between">
+                                    <span class="text-lg font-semibold text-gray-900">Total</span>
+                                    <span class="text-lg font-semibold text-gray-900">R{% widthratio total_amount 100 120 %}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" id="submit-order"
+                                class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Complete Order
+                        </button>
+                        
+                        <div class="mt-4 flex items-center justify-center space-x-2 text-xs text-gray-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                            <span>Secure SSL Encrypted Payment</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Processing overlay -->
+<div id="processing-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Processing Your Order</h3>
+        <p class="text-gray-600">Please wait while we process your payment...</p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cardRadio = document.getElementById('card');
+    const eftRadio = document.getElementById('eft');
+    const cardDetails = document.getElementById('card-details');
+    const eftDetails = document.getElementById('eft-details');
+    const submitButton = document.getElementById('submit-order');
+    const form = document.getElementById('checkout-form');
+    
+    // Payment method toggle
+    function togglePaymentMethod() {
+        if (cardRadio.checked) {
+            cardDetails.classList.remove('hidden');
+            eftDetails.classList.add('hidden');
+        } else {
+            cardDetails.classList.add('hidden');
+            eftDetails.classList.remove('hidden');
+        }
+    }
+    
+    cardRadio.addEventListener('change', togglePaymentMethod);
+    eftRadio.addEventListener('change', togglePaymentMethod);
+    
+    // Form validation and submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Basic validation
+        const billingName = document.getElementById('billing_name').value.trim();
+        const billingEmail = document.getElementById('billing_email').value.trim();
+        const terms = document.getElementById('terms').checked;
+        
+        if (!billingName || !billingEmail || !terms) {
+            alert('Please fill in all required fields and accept the terms and conditions.');
+            return;
+        }
+        
+        if (cardRadio.checked) {
+            const cardNumber = document.getElementById('card_number').value.trim();
+            const expiry = document.getElementById('expiry').value.trim();
+            const cvv = document.getElementById('cvv').value.trim();
+            
+            if (!cardNumber || !expiry || !cvv) {
+                alert('Please fill in all card details.');
+                return;
+            }
+        }
+        
+        // Show processing overlay
+        document.getElementById('processing-overlay').classList.remove('hidden');
+        submitButton.disabled = true;
+        
+        // Submit the form
+        setTimeout(() => {
+            form.submit();
+        }, 500);
+    });
+    
+    // Card number formatting
+    const cardNumberInput = document.getElementById('card_number');
+    cardNumberInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        e.target.value = value;
+    });
+    
+    // Expiry formatting
+    const expiryInput = document.getElementById('expiry');
+    expiryInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value;
+    });
+    
+    // CVV formatting
+    const cvvInput = document.getElementById('cvv');
+    cvvInput.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+    });
+});
+</script>
+{% endblock %}

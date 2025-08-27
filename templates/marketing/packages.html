@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Marketing Packages - Digitera{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Marketing Packages</h1>
+            <p class="mt-2 text-gray-600">Boost your sales with our marketing tools and promotional features</p>
+        </div>
+
+        <!-- Packages Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Starter Package -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-900">Starter</h3>
+                    <p class="text-gray-600 mt-2">Perfect for new creators</p>
+                    <div class="mt-4">
+                        <span class="text-4xl font-bold text-gray-900">R 499</span>
+                        <span class="text-gray-600">/once-off</span>
+                    </div>
+                </div>
+                
+                <ul class="mt-6 space-y-4">
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Email marketing campaign</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Social media promotion</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Basic analytics</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">1 promotional banner</span>
+                    </li>
+                </ul>
+                
+                <button class="w-full mt-8 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Get Started
+                </button>
+            </div>
+
+            <!-- Growth Package -->
+            <div class="bg-white rounded-lg shadow-sm border-2 border-blue-500 p-6 relative">
+                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">Most Popular</span>
+                </div>
+                
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-900">Growth</h3>
+                    <p class="text-gray-600 mt-2">Scale your business</p>
+                    <div class="mt-4">
+                        <span class="text-4xl font-bold text-gray-900">R 999</span>
+                        <span class="text-gray-600">/month</span>
+                    </div>
+                </div>
+                
+                <ul class="mt-6 space-y-4">
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Everything in Starter</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Advanced email campaigns</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">A/B testing</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">5 promotional banners</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Priority support</span>
+                    </li>
+                </ul>
+                
+                <button class="w-full mt-8 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Choose Growth
+                </button>
+            </div>
+
+            <!-- Pro Package -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-900">Pro</h3>
+                    <p class="text-gray-600 mt-2">For serious creators</p>
+                    <div class="mt-4">
+                        <span class="text-4xl font-bold text-gray-900">R 2,499</span>
+                        <span class="text-gray-600">/month</span>
+                    </div>
+                </div>
+                
+                <ul class="mt-6 space-y-4">
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Everything in Growth</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Custom landing pages</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Advanced analytics</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Unlimited promotions</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3"></i>
+                        <span class="text-gray-700">Dedicated account manager</span>
+                    </li>
+                </ul>
+                
+                <button class="w-full mt-8 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Go Pro
+                </button>
+            </div>
+        </div>
+
+        <!-- Features Comparison -->
+        <div class="mt-16 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Feature Comparison</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-4 px-6 font-medium text-gray-900">Feature</th>
+                            <th class="text-center py-4 px-6 font-medium text-gray-900">Starter</th>
+                            <th class="text-center py-4 px-6 font-medium text-gray-900">Growth</th>
+                            <th class="text-center py-4 px-6 font-medium text-gray-900">Pro</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="py-4 px-6 text-gray-700">Email Marketing Campaigns</td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 text-gray-700">Social Media Promotion</td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 text-gray-700">A/B Testing</td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 text-gray-700">Custom Landing Pages</td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 text-gray-700">Dedicated Account Manager</td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="mt-16 bg-blue-50 rounded-lg p-8 text-center">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Ready to boost your sales?</h2>
+            <p class="text-gray-600 mb-6">Choose the marketing package that fits your needs and start growing your business today.</p>
+            <div class="space-x-4">
+                <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Start Free Trial
+                </button>
+                <button class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    Contact Sales
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

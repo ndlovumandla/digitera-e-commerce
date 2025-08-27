@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Marketplace - Digitera{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <!-- Hero Section -->
+    <div class="relative bg-gradient-to-r from-digitera-blue to-blue-700">
+        <div class="absolute inset-0">
+            <img class="w-full h-full object-cover mix-blend-multiply filter brightness-50" src="https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3" alt="Marketplace">
+        </div>
+        <div class="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                South African Digital Marketplace
+            </h1>
+            <p class="mt-6 text-xl text-blue-100 max-w-3xl">
+                Discover premium digital products created by talented South African creators. From business templates to creative assets, find everything you need to grow your business.
+            </p>
+            <div class="mt-10">
+                <a href="{% url 'products:marketplace' %}" class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 transition duration-200">
+                    <i class="fas fa-shopping-bag mr-2"></i>
+                    Browse Products
+                </a>
+                <a href="{% url 'accounts:creator_signup' %}" class="ml-4 inline-flex items-center px-8 py-3 border border-white text-base font-medium rounded-md text-white bg-transparent hover:bg-white hover:text-blue-700 transition duration-200">
+                    <i class="fas fa-plus mr-2"></i>
+                    Start Selling
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="bg-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:py-16 sm:px-6 lg:px-8 lg:py-20">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                    Trusted by creators across South Africa
+                </h2>
+                <p class="mt-3 text-xl text-gray-500 sm:mt-4">
+                    Join thousands of creators and buyers in SA's fastest-growing digital marketplace
+                </p>
+            </div>
+            <dl class="mt-10 text-center sm:max-w-3xl sm:mx-auto sm:grid sm:grid-cols-3 sm:gap-8">
+                <div class="flex flex-col">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Active Products
+                    </dt>
+                    <dd class="order-1 text-5xl font-extrabold text-digitera-blue">
+                        10K+
+                    </dd>
+                </div>
+                <div class="flex flex-col mt-10 sm:mt-0">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Happy Customers
+                    </dt>
+                    <dd class="order-1 text-5xl font-extrabold text-digitera-blue">
+                        50K+
+                    </dd>
+                </div>
+                <div class="flex flex-col mt-10 sm:mt-0">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Total Sales
+                    </dt>
+                    <dd class="order-1 text-5xl font-extrabold text-digitera-blue">
+                        R2M+
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Featured Categories -->
+    <div class="bg-gray-50">
+        <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-24 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900">
+                    Popular Categories
+                </h2>
+                <p class="mt-4 text-lg text-gray-500">
+                    Explore our most popular product categories
+                </p>
+            </div>
+            <div class="mt-12 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+                <div class="group relative">
+                    <div class="w-full min-h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:h-80 lg:aspect-none">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3" alt="Business Templates" class="w-full h-full object-center object-cover lg:w-full lg:h-full">
+                    </div>
+                    <h3 class="mt-4 text-lg font-medium text-gray-900">
+                        <a href="{% url 'products:marketplace' %}?category=business">
+                            <span class="absolute inset-0"></span>
+                            Business Templates
+                        </a>
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-500">Professional documents and templates</p>
+                </div>
+
+                <div class="group relative">
+                    <div class="w-full min-h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:h-80 lg:aspect-none">
+                        <img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3" alt="Digital Art" class="w-full h-full object-center object-cover lg:w-full lg:h-full">
+                    </div>
+                    <h3 class="mt-4 text-lg font-medium text-gray-900">
+                        <a href="{% url 'products:marketplace' %}?category=design">
+                            <span class="absolute inset-0"></span>
+                            Design Assets
+                        </a>
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-500">Graphics, logos, and design elements</p>
+                </div>
+
+                <div class="group relative">
+                    <div class="w-full min-h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:h-80 lg:aspect-none">
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3" alt="Photography" class="w-full h-full object-center object-cover lg:w-full lg:h-full">
+                    </div>
+                    <h3 class="mt-4 text-lg font-medium text-gray-900">
+                        <a href="{% url 'products:marketplace' %}?category=photography">
+                            <span class="absolute inset-0"></span>
+                            Photography
+                        </a>
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-500">Stock photos and photography presets</p>
+                </div>
+
+                <div class="group relative">
+                    <div class="w-full min-h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:h-80 lg:aspect-none">
+                        <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3" alt="Music" class="w-full h-full object-center object-cover lg:w-full lg:h-full">
+                    </div>
+                    <h3 class="mt-4 text-lg font-medium text-gray-900">
+                        <a href="{% url 'products:marketplace' %}?category=music">
+                            <span class="absolute inset-0"></span>
+                            Music & Audio
+                        </a>
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-500">Beats, samples, and audio tracks</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="bg-digitera-blue">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
+            <h2 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                <span class="block">Ready to start selling?</span>
+                <span class="block text-blue-200">Join thousands of SA creators today.</span>
+            </h2>
+            <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
+                <div class="inline-flex rounded-md shadow">
+                    <a href="{% url 'accounts:creator_signup' %}" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 transition duration-200">
+                        Get started
+                    </a>
+                </div>
+                <div class="ml-3 inline-flex rounded-md shadow">
+                    <a href="{% url 'products:marketplace' %}" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition duration-200">
+                        Browse products
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

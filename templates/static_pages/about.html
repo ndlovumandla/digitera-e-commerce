@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Digitera{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-sm p-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-6">About Digitera</h1>
+            
+            <div class="prose max-w-none">
+                <div class="mb-8">
+                    <img src="{% static 'images/hero-bg.jpg' %}" alt="Digitera Platform" class="w-full h-64 object-cover rounded-lg mb-6">
+                </div>
+                
+                <h2 class="text-2xl font-semibold text-gray-900 mt-8 mb-4">Our Mission</h2>
+                <p class="text-gray-700 mb-6 text-lg">
+                    Digitera is South Africa's premier digital marketplace, empowering creators to monetize their knowledge and skills while providing buyers with access to high-quality digital products and services.
+                </p>
+                
+                <h2 class="text-2xl font-semibold text-gray-900 mt-8 mb-4">What We Offer</h2>
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-blue-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold text-blue-900 mb-2">For Creators</h3>
+                        <ul class="list-disc list-inside text-gray-700">
+                            <li>Easy-to-use platform for selling digital products</li>
+                            <li>Comprehensive analytics and insights</li>
+                            <li>Flexible pricing and sales models</li>
+                            <li>Secure payment processing</li>
+                            <li>Marketing and promotional tools</li>
+                        </ul>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold text-green-900 mb-2">For Buyers</h3>
+                        <ul class="list-disc list-inside text-gray-700">
+                            <li>Wide selection of digital products</li>
+                            <li>Secure and instant downloads</li>
+                            <li>Quality assurance and reviews</li>
+                            <li>Customer support and protection</li>
+                            <li>Personalized recommendations</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h2 class="text-2xl font-semibold text-gray-900 mt-8 mb-4">Product Categories</h2>
+                <div class="grid md:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-purple-50 p-4 rounded-lg text-center">
+                        <div class="text-purple-600 text-3xl mb-2">📚</div>
+                        <h4 class="font-semibold text-purple-900">Digital Downloads</h4>
+                        <p class="text-sm text-gray-600">eBooks, templates, guides, and resources</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg text-center">
+                        <div class="text-blue-600 text-3xl mb-2">🎓</div>
+                        <h4 class="font-semibold text-blue-900">Online Courses</h4>
+                        <p class="text-sm text-gray-600">Educational content and skill development</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg text-center">
+                        <div class="text-green-600 text-3xl mb-2">👥</div>
+                        <h4 class="font-semibold text-green-900">Memberships</h4>
+                        <p class="text-sm text-gray-600">Exclusive communities and content access</p>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg text-center">
+                        <div class="text-yellow-600 text-3xl mb-2">📅</div>
+                        <h4 class="font-semibold text-yellow-900">Events</h4>
+                        <p class="text-sm text-gray-600">Workshops, webinars, and masterclasses</p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg text-center">
+                        <div class="text-red-600 text-3xl mb-2">🌐</div>
+                        <h4 class="font-semibold text-red-900">Communities</h4>
+                        <p class="text-sm text-gray-600">Professional networks and discussion groups</p>
+                    </div>
+                    <div class="bg-indigo-50 p-4 rounded-lg text-center">
+                        <div class="text-indigo-600 text-3xl mb-2">🛍️</div>
+                        <h4 class="font-semibold text-indigo-900">Storefronts</h4>
+                        <p class="text-sm text-gray-600">Customizable creator stores</p>
+                    </div>
+                </div>
+                
+                <h2 class="text-2xl font-semibold text-gray-900 mt-8 mb-4">Why Choose Digitera?</h2>
+                <div class="space-y-4 mb-8">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mt-1">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-semibold text-gray-900">Local Focus</h4>
+                            <p class="text-gray-700">Built specifically for the South African market with local payment methods and compliance</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mt-1">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-semibold text-gray-900">Creator-Friendly</h4>
+                            <p class="text-gray-700">Competitive fees and comprehensive tools to help creators succeed</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mt-1">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-semibold text-gray-900">Secure & Reliable</h4>
+                            <p class="text-gray-700">Enterprise-grade security and 99.9% uptime guarantee</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mt-1">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-semibold text-gray-900">24/7 Support</h4>
+                            <p class="text-gray-700">Dedicated customer support team available around the clock</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2 class="text-2xl font-semibold text-gray-900 mt-8 mb-4">Our Story</h2>
+                <p class="text-gray-700 mb-4">
+                    Founded in 2025, Digitera was born from the vision of empowering South African creators to monetize their digital expertise. We recognized the need for a local platform that understands the unique challenges and opportunities in the South African digital economy.
+                </p>
+                <p class="text-gray-700 mb-4">
+                    Our team combines years of experience in e-commerce, digital marketing, and technology to create a platform that truly serves both creators and buyers. We're committed to fostering a thriving digital economy in South Africa.
+                </p>
+                
+                <h2 class="text-2xl font-semibold text-gray-900 mt-8 mb-4">Join Our Community</h2>
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white text-center">
+                    <h3 class="text-xl font-semibold mb-2">Ready to get started?</h3>
+                    <p class="mb-4">Whether you're a creator looking to sell or a buyer seeking quality digital products, we're here to help.</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="{% url 'accounts:register' %}" class="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            Start Selling
+                        </a>
+                        <a href="{% url 'products:marketplace' %}" class="border-2 border-white text-white px-6 py-2 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+                            Browse Products
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

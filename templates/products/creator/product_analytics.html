@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Analytics - {{ product.name }} - Digitera{% endblock %}
+
+{% block extra_head %}
+<style>
+.creator-dashboard {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.analytics-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    border: none;
+    transition: transform 0.2s ease;
+}
+
+.analytics-card:hover {
+    transform: translateY(-2px);
+}
+
+.metric-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.metric-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.metric-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin: 0 auto 1rem;
+}
+
+.metric-icon.primary { background: linear-gradient(135deg, #3B82F6 0%, #1d4ed8 100%); }
+.metric-icon.success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+.metric-icon.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+.metric-icon.info { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+.metric-icon.purple { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+
+.product-header {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.performance-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.performance-excellent { background: #dcfce7; color: #166534; }
+.performance-good { background: #dbeafe; color: #1d4ed8; }
+.performance-average { background: #fef3c7; color: #92400e; }
+.performance-poor { background: #fee2e2; color: #991b1b; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="creator-dashboard">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 mb-2">Product Analytics</h1>
+                        <p class="text-muted">Track performance and insights for your product</p>
+                    </div>
+                    <a href="{% url 'products:creator_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Products
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Header -->
+        <div class="product-header">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    {% if product.featured_image %}
+                        <img src="{{ product.featured_image.url }}" 
+                             alt="{{ product.name }}" 
+                             class="rounded"
+                             style="width: 80px; height: 80px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-image text-muted"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col">
+                    <h3 class="mb-2">{{ product.name }}</h3>
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <span class="badge bg-primary">{{ product.get_status_display }}</span>
+                        <span class="text-muted">R{{ product.price|floatformat:2 }}</span>
+                        {% if product.category %}
+                            <span class="badge bg-light text-dark">{{ product.category.name }}</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-muted mb-0">Created {{ product.created_at|naturaltime }}</p>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'products:detail' product.pk %}" 
+                           class="btn btn-outline-primary" 
+                           target="_blank">
+                            <i class="fas fa-eye me-2"></i>View Product
+                        </a>
+                        <a href="{% url 'products:creator_edit' product.pk %}" 
+                           class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Edit Product
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="row mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-icon primary">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3 class="h4 mb-1">{{ analytics.views|default:0 }}</h3>
+                    <p class="text-muted small mb-0">Total Views</p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-icon success">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3 class="h4 mb-1">{{ analytics.purchases|default:0 }}</h3>
+                    <p class="text-muted small mb-0">Sales</p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-icon warning">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h3 class="h4 mb-1">R{{ analytics.revenue|default:0|floatformat:2 }}</h3>
+                    <p class="text-muted small mb-0">Revenue</p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-icon info">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <h3 class="h4 mb-1">{{ analytics.conversion_rate|floatformat:1 }}%</h3>
+                    <p class="text-muted small mb-0">Conversion</p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-icon purple">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="h4 mb-1">{{ analytics.rating|default:0|floatformat:1 }}</h3>
+                    <p class="text-muted small mb-0">Rating</p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-icon info">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="h4 mb-1">{{ analytics.reviews|default:0 }}</h3>
+                    <p class="text-muted small mb-0">Reviews</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Insights -->
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Chart Placeholder -->
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-chart-line me-2"></i>Sales Performance
+                    </h5>
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-chart-area" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="mt-3">Detailed charts will be available soon</p>
+                        <small>Track your product's performance over time with interactive charts</small>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-clock me-2"></i>Recent Activity
+                    </h5>
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-history" style="font-size: 2rem; opacity: 0.3;"></i>
+                        <p class="mt-2">No recent activity</p>
+                        <small>Recent sales, views, and customer interactions will appear here</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Performance Summary -->
+                <div class="analytics-card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">
+                            <i class="fas fa-tachometer-alt me-2"></i>Performance Summary
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Conversion Rate</span>
+                                {% if analytics.conversion_rate >= 5 %}
+                                    <span class="performance-badge performance-excellent">Excellent</span>
+                                {% elif analytics.conversion_rate >= 2 %}
+                                    <span class="performance-badge performance-good">Good</span>
+                                {% elif analytics.conversion_rate >= 1 %}
+                                    <span class="performance-badge performance-average">Average</span>
+                                {% else %}
+                                    <span class="performance-badge performance-poor">Needs Work</span>
+                                {% endif %}
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-primary" 
+                                     style="width: {{ analytics.conversion_rate|default:0 }}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Customer Rating</span>
+                                {% if analytics.rating >= 4.5 %}
+                                    <span class="performance-badge performance-excellent">Excellent</span>
+                                {% elif analytics.rating >= 4 %}
+                                    <span class="performance-badge performance-good">Good</span>
+                                {% elif analytics.rating >= 3 %}
+                                    <span class="performance-badge performance-average">Average</span>
+                                {% else %}
+                                    <span class="performance-badge performance-poor">Needs Work</span>
+                                {% endif %}
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-warning" 
+                                     style="width: {{ analytics.rating|default:0|mul:20 }}%"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="small text-muted">
+                            <p class="mb-2"><strong>Tips to improve performance:</strong></p>
+                            <ul class="mb-0" style="padding-left: 1rem;">
+                                <li>Optimize your product description</li>
+                                <li>Add high-quality images</li>
+                                <li>Encourage customer reviews</li>
+                                <li>Consider competitive pricing</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="analytics-card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">
+                            <i class="fas fa-bolt me-2"></i>Quick Actions
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'products:creator_edit' product.pk %}" 
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-edit me-2"></i>Edit Product
+                            </a>
+                            <a href="{% url 'products:creator_duplicate' product.pk %}" 
+                               class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-copy me-2"></i>Duplicate Product
+                            </a>
+                            <a href="{% url 'products:detail' product.pk %}" 
+                               class="btn btn-outline-info btn-sm" 
+                               target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>View Live Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Future: Add chart.js integration here for interactive charts
+    console.log('Analytics page loaded for product:', '{{ product.name|escapejs }}');
+    
+    // Tooltip initialization for performance badges
+    const tooltipElements = document.querySelectorAll('.performance-badge');
+    tooltipElements.forEach(element => {
+        element.style.cursor = 'help';
+    });
+});
+</script>
+{% endblock %}

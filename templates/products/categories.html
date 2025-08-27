@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Product Categories - Digitera{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <!-- Header -->
+    <div class="bg-gray-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Product Categories</h1>
+                    <p class="mt-2 text-sm text-gray-600">Browse products by category</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'products:marketplace' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <i class="fas fa-grid-3x3 mr-2"></i>
+                        All Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Grid -->
+    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            
+            <!-- Business & Marketing -->
+            <div class="group relative bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                <div class="aspect-w-16 aspect-h-9 rounded-t-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3" alt="Business" class="w-full h-48 object-cover group-hover:opacity-75">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        <a href="{% url 'products:marketplace' %}?category=business" class="hover:text-digitera-blue">
+                            Business & Marketing
+                        </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Professional templates, business plans, marketing materials</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">1,234 products</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Popular
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Design & Graphics -->
+            <div class="group relative bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                <div class="aspect-w-16 aspect-h-9 rounded-t-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3" alt="Design" class="w-full h-48 object-cover group-hover:opacity-75">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        <a href="{% url 'products:marketplace' %}?category=design" class="hover:text-digitera-blue">
+                            Design & Graphics
+                        </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Logos, graphics, templates, design assets</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">987 products</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            Trending
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photography -->
+            <div class="group relative bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                <div class="aspect-w-16 aspect-h-9 rounded-t-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3" alt="Photography" class="w-full h-48 object-cover group-hover:opacity-75">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        <a href="{% url 'products:marketplace' %}?category=photography" class="hover:text-digitera-blue">
+                            Photography
+                        </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Stock photos, presets, photography tools</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">654 products</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            New
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Music & Audio -->
+            <div class="group relative bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                <div class="aspect-w-16 aspect-h-9 rounded-t-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3" alt="Music" class="w-full h-48 object-cover group-hover:opacity-75">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        <a href="{% url 'products:marketplace' %}?category=music" class="hover:text-digitera-blue">
+                            Music & Audio
+                        </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Beats, samples, sound effects, music tracks</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">432 products</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Featured
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Digital Art -->
+            <div class="group relative bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                <div class="aspect-w-16 aspect-h-9 rounded-t-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3" alt="Digital Art" class="w-full h-48 object-cover group-hover:opacity-75">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        <a href="{% url 'products:marketplace' %}?category=digital-art" class="hover:text-digitera-blue">
+                            Digital Art
+                        </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Illustrations, NFTs, digital paintings</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">321 products</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                            Hot
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Education -->
+            <div class="group relative bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                <div class="aspect-w-16 aspect-h-9 rounded-t-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3" alt="Education" class="w-full h-48 object-cover group-hover:opacity-75">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        <a href="{% url 'products:marketplace' %}?category=education" class="hover:text-digitera-blue">
+                            Education & Courses
+                        </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Online courses, tutorials, educational materials</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">567 products</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Popular
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Software & Apps -->
+            <div class="group relative bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                <div class="aspect-w-16 aspect-h-9 rounded-t-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3" alt="Software" class="w-full h-48 object-cover group-hover:opacity-75">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        <a href="{% url 'products:marketplace' %}?category=software" class="hover:text-digitera-blue">
+                            Software & Apps
+                        </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Mobile apps, web apps, software tools</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">234 products</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Premium
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Writing & Content -->
+            <div class="group relative bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                <div class="aspect-w-16 aspect-h-9 rounded-t-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-4.0.3" alt="Writing" class="w-full h-48 object-cover group-hover:opacity-75">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        <a href="{% url 'products:marketplace' %}?category=writing" class="hover:text-digitera-blue">
+                            Writing & Content
+                        </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">eBooks, articles, copywriting templates</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">445 products</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                            Quality
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="bg-gray-50 border-t border-gray-200">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">
+                    Can't find what you're looking for?
+                </h2>
+                <p class="text-gray-600 mb-6">
+                    Browse all products or suggest a new category
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'products:marketplace' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-digitera-blue hover:bg-blue-700 transition duration-200">
+                        <i class="fas fa-search mr-2"></i>
+                        Browse All Products
+                    </a>
+                    <a href="#" class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-200">
+                        <i class="fas fa-lightbulb mr-2"></i>
+                        Suggest Category
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

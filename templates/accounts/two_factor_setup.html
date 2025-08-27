@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+
+{% block title %}Two-Factor Authentication Setup - Digitera{% endblock %}
+
+{% block description %}Secure your Digitera account with two-factor authentication{% endblock %}
+
+{% block main_classes %}min-h-screen py-12 px-4 sm:px-6 lg:px-8{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <div class="mx-auto h-16 w-16 bg-green-100 rounded-full flex items-center justify-center">
+            <i class="fas fa-shield-alt text-green-600 text-2xl"></i>
+        </div>
+        <h1 class="mt-4 text-3xl font-extrabold text-gray-900">
+            Two-Factor Authentication
+        </h1>
+        <p class="mt-2 text-lg text-gray-600">
+            Add an extra layer of security to your account
+        </p>
+    </div>
+
+    <!-- Current Status -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        {% if user.userprofile.two_factor_enabled %}
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                        {% else %}
+                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-times text-red-600"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-gray-900">
+                            Two-Factor Authentication Status
+                        </h3>
+                        <p class="text-sm text-gray-500">
+                            {% if user.userprofile.two_factor_enabled %}
+                                ✅ Enabled - Your account is protected with 2FA
+                            {% else %}
+                                ❌ Disabled - Your account is not protected with 2FA
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    {% if user.userprofile.two_factor_enabled %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            Active
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                            Inactive
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if not user.userprofile.two_factor_enabled %}
+        <!-- Setup 2FA -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    Setup Two-Factor Authentication
+                </h3>
+                
+                <!-- Step 1: Install App -->
+                <div class="mb-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-digitera-blue rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                            1
+                        </div>
+                        <h4 class="text-md font-medium text-gray-900">Install an Authenticator App</h4>
+                    </div>
+                    <div class="ml-11">
+                        <p class="text-sm text-gray-600 mb-4">
+                            Download and install one of these authenticator apps on your mobile device:
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="border border-gray-200 rounded-lg p-4 text-center">
+                                <i class="fab fa-google text-2xl text-blue-600 mb-2"></i>
+                                <h5 class="font-medium text-gray-900">Google Authenticator</h5>
+                                <p class="text-xs text-gray-500 mt-1">Free • iOS & Android</p>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4 text-center">
+                                <i class="fas fa-mobile-alt text-2xl text-purple-600 mb-2"></i>
+                                <h5 class="font-medium text-gray-900">Authy</h5>
+                                <p class="text-xs text-gray-500 mt-1">Free • Cross-platform</p>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4 text-center">
+                                <i class="fas fa-shield-alt text-2xl text-green-600 mb-2"></i>
+                                <h5 class="font-medium text-gray-900">Microsoft Authenticator</h5>
+                                <p class="text-xs text-gray-500 mt-1">Free • iOS & Android</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Scan QR Code -->
+                <div class="mb-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-digitera-blue rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                            2
+                        </div>
+                        <h4 class="text-md font-medium text-gray-900">Scan QR Code</h4>
+                    </div>
+                    <div class="ml-11">
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+                            {% if qr_code_url %}
+                                <img src="{{ qr_code_url }}" alt="2FA QR Code" class="mx-auto mb-4 border border-gray-300 rounded">
+                                <p class="text-sm text-gray-600 mb-4">
+                                    Scan this QR code with your authenticator app
+                                </p>
+                                <div class="bg-white border border-gray-300 rounded p-3 inline-block">
+                                    <p class="text-xs text-gray-500 mb-1">Manual entry key:</p>
+                                    <code class="text-sm font-mono text-gray-900 break-all">{{ secret_key }}</code>
+                                </div>
+                            {% else %}
+                                <button onclick="generateQRCode()" 
+                                        class="bg-digitera-blue text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-300">
+                                    <i class="fas fa-qrcode mr-2"></i>
+                                    Generate QR Code
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Verify -->
+                <div class="mb-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-digitera-blue rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                            3
+                        </div>
+                        <h4 class="text-md font-medium text-gray-900">Verify Setup</h4>
+                    </div>
+                    <div class="ml-11">
+                        <form method="post" class="space-y-4">
+                            {% csrf_token %}
+                            <div>
+                                <label for="id_token" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Enter the 6-digit code from your authenticator app:
+                                </label>
+                                {{ form.token }}
+                                {% if form.token.errors %}
+                                    <div class="mt-1">
+                                        {% for error in form.token.errors %}
+                                            <p class="text-sm text-red-600">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <p class="mt-1 text-xs text-gray-500">
+                                    The code changes every 30 seconds
+                                </p>
+                            </div>
+                            <button type="submit" 
+                                    class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition duration-300">
+                                <i class="fas fa-check mr-2"></i>
+                                Enable Two-Factor Authentication
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Benefits -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 class="text-lg font-medium text-blue-900 mb-4">
+                <i class="fas fa-info-circle mr-2"></i>
+                Why Enable Two-Factor Authentication?
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-shield-alt text-blue-600 mt-1"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h4 class="text-sm font-medium text-blue-900">Enhanced Security</h4>
+                        <p class="text-sm text-blue-700">Protects your account even if your password is compromised</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-store text-blue-600 mt-1"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h4 class="text-sm font-medium text-blue-900">Creator Protection</h4>
+                        <p class="text-sm text-blue-700">Safeguards your digital products and earnings</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-credit-card text-blue-600 mt-1"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h4 class="text-sm font-medium text-blue-900">Payment Security</h4>
+                        <p class="text-sm text-blue-700">Protects your payment methods and transaction history</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-compliance text-blue-600 mt-1"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h4 class="text-sm font-medium text-blue-900">POPIA Compliance</h4>
+                        <p class="text-sm text-blue-700">Meets South African data protection standards</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Manage 2FA -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    Manage Two-Factor Authentication
+                </h3>
+                
+                <!-- Backup Codes -->
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-900 mb-2">Backup Codes</h4>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Store these backup codes in a safe place. Each code can only be used once if you lose access to your authenticator app.
+                    </p>
+                    {% if backup_codes %}
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-sm">
+                                {% for code in backup_codes %}
+                                    <div class="bg-white border border-gray-300 rounded px-3 py-2 text-center">
+                                        {{ code }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="mt-4 flex space-x-4">
+                                <button onclick="printBackupCodes()" 
+                                        class="text-sm text-digitera-blue hover:text-blue-500">
+                                    <i class="fas fa-print mr-1"></i>Print Codes
+                                </button>
+                                <button onclick="downloadBackupCodes()" 
+                                        class="text-sm text-digitera-blue hover:text-blue-500">
+                                    <i class="fas fa-download mr-1"></i>Download Codes
+                                </button>
+                            </div>
+                        </div>
+                    {% else %}
+                        <form method="post" action="{% url 'accounts:generate_backup_codes' %}">
+                            {% csrf_token %}
+                            <button type="submit" 
+                                    class="bg-digitera-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">
+                                <i class="fas fa-key mr-2"></i>
+                                Generate Backup Codes
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+
+                <!-- Disable 2FA -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h4 class="text-md font-medium text-red-900 mb-2">Disable Two-Factor Authentication</h4>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Disabling 2FA will make your account less secure. We recommend keeping it enabled.
+                    </p>
+                    <form method="post" action="{% url 'accounts:disable_two_factor' %}" 
+                          onsubmit="return confirm('Are you sure you want to disable two-factor authentication? This will make your account less secure.')">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300">
+                            <i class="fas fa-times mr-2"></i>
+                            Disable Two-Factor Authentication
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Navigation -->
+    <div class="mt-8 flex justify-between">
+        <a href="{% url 'accounts:dashboard' %}" 
+           class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-300">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Dashboard
+        </a>
+        {% if user.userprofile.two_factor_enabled %}
+            <a href="{% url 'accounts:profile_update' %}" 
+               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-digitera-blue hover:bg-blue-700 transition duration-300">
+                Profile Settings
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function generateQRCode() {
+        // This would typically make an AJAX call to generate the QR code
+        window.location.reload();
+    }
+
+    function printBackupCodes() {
+        const codes = document.querySelectorAll('.grid div');
+        let printContent = '<h2>Digitera Backup Codes</h2><ul>';
+        codes.forEach(code => {
+            printContent += `<li>${code.textContent.trim()}</li>`;
+        });
+        printContent += '</ul><p><strong>Important:</strong> Store these codes in a safe place. Each code can only be used once.</p>';
+        
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head><title>Digitera Backup Codes</title></head>
+                <body style="font-family: Arial, sans-serif; padding: 20px;">
+                    ${printContent}
+                </body>
+            </html>
+        `);
+        printWindow.print();
+    }
+
+    function downloadBackupCodes() {
+        const codes = Array.from(document.querySelectorAll('.grid div')).map(el => el.textContent.trim());
+        const content = `Digitera Backup Codes\n\n${codes.join('\n')}\n\nImportant: Store these codes in a safe place. Each code can only be used once.`;
+        
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'digitera-backup-codes.txt';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+
+    // Auto-format token input
+    document.addEventListener('DOMContentLoaded', function() {
+        const tokenField = document.getElementById('id_token');
+        if (tokenField) {
+            tokenField.addEventListener('input', function() {
+                // Remove non-digits and limit to 6 characters
+                this.value = this.value.replace(/\D/g, '').substring(0, 6);
+            });
+        }
+    });
+</script>
+{% endblock %}

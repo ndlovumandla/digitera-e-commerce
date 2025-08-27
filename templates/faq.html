@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Frequently Asked Questions - Digitera{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <!-- Header -->
+    <div class="bg-gray-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                    Frequently Asked Questions
+                </h1>
+                <p class="mt-4 text-lg text-gray-600">
+                    Find answers to common questions about Digitera
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="relative">
+            <input type="text" 
+                   placeholder="Search FAQs..." 
+                   class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-digitera-blue focus:border-digitera-blue">
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                <i class="fas fa-search text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Categories -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        <div class="flex flex-wrap justify-center gap-4 mb-12">
+            <button class="faq-category-btn px-6 py-2 bg-digitera-blue text-white rounded-full hover:bg-blue-700 transition duration-200" data-category="all">
+                All Questions
+            </button>
+            <button class="faq-category-btn px-6 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition duration-200" data-category="buying">
+                Buying
+            </button>
+            <button class="faq-category-btn px-6 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition duration-200" data-category="selling">
+                Selling
+            </button>
+            <button class="faq-category-btn px-6 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition duration-200" data-category="payments">
+                Payments
+            </button>
+            <button class="faq-category-btn px-6 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition duration-200" data-category="technical">
+                Technical
+            </button>
+        </div>
+
+        <!-- FAQ Content -->
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- Buying Questions -->
+            <div class="faq-section" data-category="buying">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-shopping-cart mr-3 text-blue-500"></i>
+                    Buying on Digitera
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">How do I purchase a digital product?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">To purchase a digital product, browse our marketplace, click on the product you want, and click "Add to Cart" or "Buy Now". You'll be taken to our secure checkout where you can pay with your credit card, debit card, or EFT. After successful payment, you'll receive an email with download links.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">What payment methods do you accept?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">We accept all major credit and debit cards (Visa, Mastercard, American Express), EFT transfers, and SnapScan. All payments are processed securely through our payment partners.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">Can I get a refund if I'm not satisfied?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">Due to the nature of digital products, we generally don't offer refunds once you've downloaded the files. However, if there's a technical issue with the product or it doesn't match the description, please contact our support team within 48 hours for assistance.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">How do I download my purchased products?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">After purchase, you'll receive an email with download links. You can also access all your purchased products from your account dashboard under "My Purchases". Downloads are available for 30 days after purchase.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selling Questions -->
+            <div class="faq-section mt-12" data-category="selling">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-store mr-3 text-green-500"></i>
+                    Selling on Digitera
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">How do I become a creator on Digitera?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">Simply sign up for a creator account, complete your profile, and start uploading your digital products. We'll review your application within 24-48 hours. There are no upfront costs to become a creator.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">What commission does Digitera charge?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">We charge a 15% commission on all sales, which covers payment processing, hosting, marketing, and customer support. You keep 85% of every sale. There are no monthly fees or listing fees.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">When and how do I get paid?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">Payments are processed weekly on Fridays via EFT to your registered South African bank account. You need to earn at least R100 before a payout is triggered. You can track your earnings in real-time from your creator dashboard.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">What types of products can I sell?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">You can sell various digital products including templates, graphics, photos, music, courses, eBooks, software, and more. All products must be original or properly licensed, and comply with our content guidelines.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">How do I optimize my products for better sales?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">Use high-quality preview images, write detailed descriptions, choose appropriate tags, price competitively, and encourage customer reviews. Check out our Creator Resources page for detailed tips and best practices.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Questions -->
+            <div class="faq-section mt-12" data-category="payments">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-credit-card mr-3 text-purple-500"></i>
+                    Payments & Billing
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">Is my payment information secure?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">Yes, all payment information is encrypted and processed through PCI-compliant payment processors. We never store your full credit card details on our servers. Your financial information is completely secure.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">Do you charge VAT on purchases?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">Yes, VAT is included in all prices displayed on our platform. As a registered VAT vendor in South Africa, we collect and remit VAT to SARS as required by law. Your invoice will show the VAT breakdown.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">Can I get an invoice for my purchase?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">Yes, you'll automatically receive a tax invoice via email after every purchase. You can also download invoices from your account dashboard under "Purchase History". All invoices are SARS-compliant.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Questions -->
+            <div class="faq-section mt-12" data-category="technical">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-cog mr-3 text-orange-500"></i>
+                    Technical Support
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">What file formats are supported?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">We support most common file formats including PDF, ZIP, JPG, PNG, PSD, AI, EPS, MP3, MP4, MOV, DOC, PPT, and more. Maximum file size is 500MB per product. If you need to upload larger files, contact our support team.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">I'm having trouble downloading my purchase</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">If you're having download issues, try using a different browser or clearing your browser cache. Make sure you're logged into the correct account. If problems persist, contact our support team with your order number for immediate assistance.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white border border-gray-200 rounded-lg">
+                        <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50">
+                            <span class="font-medium text-gray-900">How do I reset my password?</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-4">
+                            <p class="text-gray-600">Click "Forgot Password" on the login page, enter your email address, and we'll send you a password reset link. If you don't receive the email within a few minutes, check your spam folder or contact support.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="mt-16 bg-gray-50 rounded-lg p-8 text-center">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Still have questions?</h2>
+            <p class="text-gray-600 mb-6">Our support team is here to help</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-digitera-blue hover:bg-blue-700 transition duration-200">
+                    <i class="fas fa-envelope mr-2"></i>
+                    Contact Support
+                </a>
+                <a href="#" class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-200">
+                    <i class="fas fa-comments mr-2"></i>
+                    Live Chat
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // FAQ Toggle Functionality
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        const answer = item.querySelector('.faq-answer');
+        const icon = question.querySelector('.fa-chevron-down');
+        
+        question.addEventListener('click', () => {
+            const isOpen = !answer.classList.contains('hidden');
+            
+            // Close all other FAQs
+            faqItems.forEach(otherItem => {
+                const otherAnswer = otherItem.querySelector('.faq-answer');
+                const otherIcon = otherItem.querySelector('.fa-chevron-down');
+                otherAnswer.classList.add('hidden');
+                otherIcon.classList.remove('rotate-180');
+            });
+            
+            // Toggle current FAQ
+            if (!isOpen) {
+                answer.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            }
+        });
+    });
+    
+    // Category Filter Functionality
+    const categoryBtns = document.querySelectorAll('.faq-category-btn');
+    const faqSections = document.querySelectorAll('.faq-section');
+    
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const category = btn.dataset.category;
+            
+            // Update button styles
+            categoryBtns.forEach(b => {
+                b.classList.remove('bg-digitera-blue', 'text-white');
+                b.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            btn.classList.remove('bg-gray-200', 'text-gray-700');
+            btn.classList.add('bg-digitera-blue', 'text-white');
+            
+            // Show/hide sections
+            faqSections.forEach(section => {
+                if (category === 'all' || section.dataset.category === category) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Search Functionality
+    const searchInput = document.querySelector('input[type="text"]');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+            const answer = item.querySelector('.faq-answer p').textContent.toLowerCase();
+            
+            if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+.faq-item {
+    transition: all 0.2s ease;
+}
+
+.faq-item:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

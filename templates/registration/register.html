@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Digitera{% endblock %}
+
+{% block description %}Join Digitera - Create your account to start selling or buying digital products in South Africa{% endblock %}
+
+{% block main_classes %}min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8{% endblock %}
+
+{% block content %}
+<div class="max-w-md w-full space-y-8">
+    <!-- Header -->
+    <div class="text-center">
+        <div class="mx-auto h-12 w-12 sa-flag-gradient rounded-full flex items-center justify-center">
+            <i class="fas fa-user-plus text-white text-xl"></i>
+        </div>
+        <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+            Join Digitera
+        </h2>
+        <p class="mt-2 text-sm text-gray-600">
+            Start your journey in South Africa's digital marketplace
+        </p>
+        <p class="mt-1 text-xs text-gray-500">
+            Already have an account? 
+            <a href="{% url 'accounts:login' %}" class="font-medium text-digitera-blue hover:text-blue-500">
+                Sign in here
+            </a>
+        </p>
+    </div>
+
+    <!-- Registration Form -->
+    <form class="mt-8 space-y-6" method="post">
+        {% csrf_token %}
+        <div class="rounded-md shadow-sm space-y-4">
+            <!-- Name Fields -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="id_first_name" class="block text-sm font-medium text-gray-700 mb-1">
+                        First Name <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div class="mt-1">
+                            {% for error in form.first_name.errors %}
+                                <p class="text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="id_last_name" class="block text-sm font-medium text-gray-700 mb-1">
+                        Last Name <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div class="mt-1">
+                            {% for error in form.last_name.errors %}
+                                <p class="text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="id_email" class="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address <span class="text-red-500">*</span>
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="mt-1">
+                        {% for error in form.email.errors %}
+                            <p class="text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <p class="mt-1 text-xs text-gray-500">
+                    We'll send you important updates about your account
+                </p>
+            </div>
+
+            <!-- Phone Number -->
+            <div>
+                <label for="id_phone_number" class="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number <span class="text-red-500">*</span>
+                </label>
+                {{ form.phone_number }}
+                {% if form.phone_number.errors %}
+                    <div class="mt-1">
+                        {% for error in form.phone_number.errors %}
+                            <p class="text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <p class="mt-1 text-xs text-gray-500">
+                    <i class="fas fa-flag mr-1"></i>🇿🇦 South African number (e.g., +27 82 123 4567)
+                </p>
+            </div>
+
+            <!-- Password Fields -->
+            <div>
+                <label for="id_password1" class="block text-sm font-medium text-gray-700 mb-1">
+                    Password <span class="text-red-500">*</span>
+                </label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <div class="mt-1">
+                        {% for error in form.password1.errors %}
+                            <p class="text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="mt-1 text-xs text-gray-500">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>• At least 8 characters</div>
+                        <div>• Mix of letters & numbers</div>
+                        <div>• Include special characters</div>
+                        <div>• Not commonly used</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label for="id_password2" class="block text-sm font-medium text-gray-700 mb-1">
+                    Confirm Password <span class="text-red-500">*</span>
+                </label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <div class="mt-1">
+                        {% for error in form.password2.errors %}
+                            <p class="text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Account Type -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">
+                    I want to: <span class="text-red-500">*</span>
+                </label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <label class="relative">
+                        <input type="radio" name="account_type" value="buyer" class="sr-only" required>
+                        <div class="account-type-card border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-digitera-blue transition duration-300">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-shopping-cart text-blue-600"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">Buy Products</div>
+                                    <div class="text-xs text-gray-500">Shop digital content</div>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                    <label class="relative">
+                        <input type="radio" name="account_type" value="creator" class="sr-only" required>
+                        <div class="account-type-card border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-digitera-blue transition duration-300">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-store text-green-600"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">Sell Products</div>
+                                    <div class="text-xs text-gray-500">Create your store</div>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Terms and Conditions -->
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input type="checkbox" name="terms_accepted" required 
+                           class="focus:ring-digitera-blue h-4 w-4 text-digitera-blue border-gray-300 rounded">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label class="text-gray-700">
+                        I agree to the 
+                        <a href="#" class="font-medium text-digitera-blue hover:text-blue-500">Terms of Service</a>, 
+                        <a href="#" class="font-medium text-digitera-blue hover:text-blue-500">Privacy Policy</a>, and 
+                        <a href="#" class="font-medium text-digitera-blue hover:text-blue-500">POPIA Compliance</a>
+                        <span class="text-red-500">*</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Marketing Consent -->
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input type="checkbox" name="marketing_consent" 
+                           class="focus:ring-digitera-blue h-4 w-4 text-digitera-blue border-gray-300 rounded">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label class="text-gray-700">
+                        I'd like to receive updates about new features, special offers, and South African market insights
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+            <button type="submit" 
+                    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-digitera-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-digitera-blue transition duration-300">
+                <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                    <i class="fas fa-user-plus group-hover:text-blue-300" aria-hidden="true"></i>
+                </span>
+                Create My Account
+            </button>
+        </div>
+
+        <!-- Social Registration -->
+        <div class="mt-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-gray-50 text-gray-500">Or continue with</span>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 gap-3">
+                <button type="button" disabled
+                   class="w-full inline-flex justify-center py-2 px-4 border border-gray-200 rounded-md shadow-sm bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed transition duration-300">
+                    <i class="fab fa-google text-gray-400"></i>
+                    <span class="ml-2">Google</span>
+                    <span class="ml-1 text-xs">(Coming Soon)</span>
+                </button>
+                <button type="button" disabled
+                   class="w-full inline-flex justify-center py-2 px-4 border border-gray-200 rounded-md shadow-sm bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed transition duration-300">
+                    <i class="fab fa-facebook text-gray-400"></i>
+                    <span class="ml-2">Facebook</span>
+                    <span class="ml-1 text-xs">(Coming Soon)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SA Specific Notice -->
+        <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-info-circle text-blue-400"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800">
+                        South African Platform Benefits
+                    </h3>
+                    <div class="mt-2 text-sm text-blue-700">
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Local ZAR payments with no international fees</li>
+                            <li>POPIA compliant data protection</li>
+                            <li>VAT handling for registered businesses</li>
+                            <li>Local customer support in 11 official languages</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Custom radio button styling */
+    input[type="radio"]:checked + .account-type-card {
+        border-color: #3B82F6;
+        background-color: #EBF4FF;
+    }
+    
+    input[type="radio"]:checked + .account-type-card .text-gray-900 {
+        color: #1E40AF;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Account type selection handling
+    document.querySelectorAll('input[name="account_type"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            // Remove selected styling from all cards
+            document.querySelectorAll('.account-type-card').forEach(function(card) {
+                card.classList.remove('border-digitera-blue', 'bg-blue-50');
+                card.classList.add('border-gray-200');
+            });
+            
+            // Add selected styling to chosen card
+            if (this.checked) {
+                const card = this.nextElementSibling;
+                card.classList.remove('border-gray-200');
+                card.classList.add('border-digitera-blue', 'bg-blue-50');
+            }
+        });
+    });
+
+    // Password strength indicator
+    document.getElementById('id_password1').addEventListener('input', function() {
+        const password = this.value;
+        const requirements = [
+            { regex: /.{8,}/, text: 'At least 8 characters' },
+            { regex: /[A-Za-z]/, text: 'Contains letters' },
+            { regex: /[0-9]/, text: 'Contains numbers' },
+            { regex: /[^A-Za-z0-9]/, text: 'Contains special characters' }
+        ];
+        
+        // You can add visual feedback here if needed
+    });
+</script>
+{% endblock %}

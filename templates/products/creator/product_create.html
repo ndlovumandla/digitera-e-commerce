@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Product - Digitera Creator{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Create New Product</h1>
+                    <p class="mt-2 text-gray-600">Add a new digital product to your store</p>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="{% url 'products:creator_list' %}" 
+                       class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Creation Form -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <form method="post" enctype="multipart/form-data" class="divide-y divide-gray-200">
+                {% csrf_token %}
+                
+                <!-- Display form errors if any -->
+                {% if form.errors %}
+                    <div class="p-6 bg-red-50 border-l-4 border-red-400">
+                        <div class="flex">
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Please correct the following errors:</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    {% for field, errors in form.errors.items %}
+                                        <div class="mb-2">
+                                            <strong>{{ field|title }}:</strong>
+                                            {% for error in errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- Basic Information -->
+                <div class="p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Product Name -->
+                        <div>
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Product Name *
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Short Description -->
+                        <div>
+                            <label for="{{ form.short_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Short Description
+                            </label>
+                            {{ form.short_description }}
+                            {% if form.short_description.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.short_description.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Full Description -->
+                        <div>
+                            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Full Description *
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Category and Pricing -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Category *
+                                </label>
+                                {{ form.category }}
+                                {% if form.category.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.category.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.pricing_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Pricing Type *
+                                </label>
+                                {{ form.pricing_type }}
+                                {% if form.pricing_type.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.pricing_type.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Pricing -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="{{ form.price.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Price (ZAR) *
+                                </label>
+                                {{ form.price }}
+                                {% if form.price.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.price.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ form.minimum_price.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Minimum Price (for flexible pricing)
+                                </label>
+                                {{ form.minimum_price }}
+                                {% if form.minimum_price.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.minimum_price.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Image & Tags -->
+                <div class="p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Media & Tags</h3>
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Featured Image -->
+                        <div>
+                            <label for="{{ form.featured_image.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Featured Image URL
+                            </label>
+                            {{ form.featured_image }}
+                            <p class="text-sm text-gray-500 mt-1">Enter the URL of your product image. For best results, use a 16:9 aspect ratio.</p>
+                            {% if form.featured_image.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.featured_image.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Tags -->
+                        <div>
+                            <label for="{{ form.tags_input.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tags
+                            </label>
+                            {{ form.tags_input }}
+                            <p class="text-sm text-gray-500 mt-1">{{ form.tags_input.help_text }}</p>
+                            {% if form.tags_input.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.tags_input.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Digital Download Settings -->
+                <div class="p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Digital Download Settings</h3>
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Download Files -->
+                        <div>
+                            <label for="{{ download_form.download_files_input.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Download Files
+                            </label>
+                            {{ download_form.download_files_input }}
+                            <p class="text-sm text-gray-500 mt-1">{{ download_form.download_files_input.help_text }}</p>
+                            {% if download_form.download_files_input.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ download_form.download_files_input.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Delivery Method and Limits -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="{{ download_form.delivery_method.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Delivery Method
+                                </label>
+                                {{ download_form.delivery_method }}
+                                {% if download_form.delivery_method.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ download_form.delivery_method.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ download_form.download_limit.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Download Limit
+                                </label>
+                                {{ download_form.download_limit }}
+                                {% if download_form.download_limit.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ download_form.download_limit.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ download_form.expiry_days.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Expiry Days
+                                </label>
+                                {{ download_form.expiry_days }}
+                                {% if download_form.expiry_days.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ download_form.expiry_days.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- License Information -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="{{ download_form.license_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    License Type
+                                </label>
+                                {{ download_form.license_type }}
+                                {% if download_form.license_type.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ download_form.license_type.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- License Terms -->
+                        <div>
+                            <label for="{{ download_form.license_terms.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                License Terms
+                            </label>
+                            {{ download_form.license_terms }}
+                            {% if download_form.license_terms.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ download_form.license_terms.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Publication Settings -->
+                <div class="p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Publication Settings</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Status
+                            </label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.status.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.visibility.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Visibility
+                            </label>
+                            {{ form.visibility }}
+                            {% if form.visibility.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.visibility.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEO Settings -->
+                <div class="p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">SEO Settings (Optional)</h3>
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label for="{{ form.meta_title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Meta Title
+                            </label>
+                            {{ form.meta_title }}
+                            {% if form.meta_title.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.meta_title.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.meta_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Meta Description
+                            </label>
+                            {{ form.meta_description }}
+                            {% if form.meta_description.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.meta_description.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
+                    <a href="{% url 'products:creator_list' %}" 
+                       class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Create Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,719 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Marketplace Discovery - Digitera{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="Discover digital products, courses, memberships, and more from South African creators. AI-powered recommendations and trending products.">
+<meta name="keywords" content="marketplace, digital products, courses, memberships, South Africa, creators">
+
+<!-- Social Media Meta -->
+<meta property="og:title" content="Marketplace Discovery - Digitera">
+<meta property="og:description" content="Discover digital products from South African creators">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+
+<!-- Preload critical resources -->
+<link rel="preload" href="{% static 'css/marketplace.css' %}" as="style">
+<link rel="preload" href="{% static 'js/marketplace.js' %}" as="script">
+
+<!-- Alpine.js for interactive components -->
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<style>
+/* Inline critical CSS for faster loading */
+.marketplace-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem 0;
+}
+
+.product-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: white;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-trending { background: #fef3c7; color: #92400e; }
+.badge-new { background: #dcfce7; color: #166534; }
+.badge-featured { background: #fde68a; color: #92400e; }
+
+@media (max-width: 640px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem 0;
+    }
+    .marketplace-hero { padding: 2rem 0; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="marketplace-app" x-data="marketplaceApp()">
+    <!-- Hero Section -->
+    <section class="marketplace-hero">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4">
+                Discover Digital Products
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 opacity-90">
+                From South African creators, for the world
+            </p>
+            
+            <!-- Search Bar -->
+            <div class="max-w-2xl mx-auto relative" x-data="{ isOpen: false }">
+                <input 
+                    type="text" 
+                    placeholder="Search products, creators, categories..."
+                    class="w-full px-6 py-4 text-lg rounded-full border-0 shadow-lg text-gray-800 focus:ring-4 focus:ring-blue-300"
+                    x-model="searchQuery"
+                    @input="searchProducts()"
+                    @focus="isOpen = true"
+                    @blur="setTimeout(() => isOpen = false, 200)"
+                >
+                <button 
+                    class="absolute right-2 top-2 bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition"
+                    @click="performSearch()"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+                
+                <!-- Search Suggestions -->
+                <div 
+                    x-show="isOpen && suggestions.length > 0"
+                    x-transition
+                    class="absolute top-full left-0 right-0 bg-white rounded-lg shadow-xl mt-2 py-2 z-50"
+                >
+                    <template x-for="suggestion in suggestions" :key="suggestion">
+                        <div 
+                            class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            @click="selectSuggestion(suggestion)"
+                            x-text="suggestion"
+                        ></div>
+                    </template>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                    <div class="text-2xl font-bold">{{ marketplace_stats.total_products|default:"0" }}</div>
+                    <div class="text-sm opacity-75">Products</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold">{{ marketplace_stats.total_creators|default:"0" }}</div>
+                    <div class="text-sm opacity-75">Creators</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold">{{ marketplace_stats.today_sales|default:"0" }}</div>
+                    <div class="text-sm opacity-75">Sales Today</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold">R{{ marketplace_stats.today_revenue|default:"0" }}</div>
+                    <div class="text-sm opacity-75">Revenue Today</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Navigation -->
+    <section class="bg-gray-50 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap gap-2 justify-center">
+                <button 
+                    class="px-4 py-2 rounded-full font-medium transition"
+                    :class="selectedCategory === 'all' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                    @click="filterByCategory('all')"
+                >
+                    All Products
+                </button>
+                {% for category in categories %}
+                <button 
+                    class="px-4 py-2 rounded-full font-medium transition"
+                    :class="selectedCategory === '{{ category.slug }}' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                    @click="filterByCategory('{{ category.slug }}')"
+                >
+                    {{ category.name }} ({{ category.products_count }})
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    {% if featured_products %}
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Featured Products</h2>
+                <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">View All →</a>
+            </div>
+            
+            <div class="product-grid">
+                {% for product in featured_products %}
+                <div class="product-card">
+                    <div class="relative">
+                        <img 
+                            src="{{ product.featured_image.url|default:'/static/images/placeholder-product.jpg' }}" 
+                            alt="{{ product.title }}"
+                            class="w-full h-48 object-cover"
+                            loading="lazy"
+                        >
+                        <div class="absolute top-2 left-2">
+                            <span class="badge badge-featured">Featured</span>
+                        </div>
+                        <div class="absolute top-2 right-2">
+                            <button class="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition">
+                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2 line-clamp-2">{{ product.title }}</h3>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ product.short_description }}</p>
+                        
+                        <div class="flex items-center mb-3">
+                            <img 
+                                src="{{ product.creator.profile.avatar.url|default:'/static/images/default-avatar.png' }}" 
+                                alt="{{ product.creator.get_full_name }}"
+                                class="w-6 h-6 rounded-full mr-2"
+                            >
+                            <span class="text-sm text-gray-700">{{ product.creator.get_full_name }}</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                {% if product.avg_rating %}
+                                <div class="flex items-center text-yellow-400 mr-2">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= product.avg_rating %}
+                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                            </svg>
+                                        {% else %}
+                                            <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                            </svg>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="text-sm text-gray-600">({{ product.sales_count }})</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="text-right">
+                                {% if product.sale_price and product.sale_price < product.price %}
+                                    <span class="text-lg font-bold text-green-600">R{{ product.sale_price }}</span>
+                                    <span class="text-sm text-gray-500 line-through ml-1">R{{ product.price }}</span>
+                                {% else %}
+                                    <span class="text-lg font-bold text-gray-900">R{{ product.price }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium">
+                            View Product
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Trending Products -->
+    {% if trending_products %}
+    <section class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Trending Now</h2>
+                <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">View All →</a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for product in trending_products %}
+                <div class="product-card">
+                    <div class="relative">
+                        <img 
+                            src="{{ product.featured_image.url|default:'/static/images/placeholder-product.jpg' }}" 
+                            alt="{{ product.title }}"
+                            class="w-full h-32 object-cover"
+                            loading="lazy"
+                        >
+                        <div class="absolute top-2 left-2">
+                            <span class="badge badge-trending">🔥 Trending</span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3">
+                        <h3 class="font-semibold mb-1 line-clamp-1">{{ product.title }}</h3>
+                        <p class="text-sm text-gray-600 mb-2">{{ product.creator.get_full_name }}</p>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-green-600 font-medium">{{ product.last_24h_sales }} sales</span>
+                            <span class="font-bold text-gray-900">R{{ product.price }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- New Arrivals -->
+    {% if new_arrivals %}
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">New Arrivals</h2>
+                <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">View All →</a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                {% for product in new_arrivals %}
+                <div class="product-card">
+                    <div class="relative">
+                        <img 
+                            src="{{ product.featured_image.url|default:'/static/images/placeholder-product.jpg' }}" 
+                            alt="{{ product.title }}"
+                            class="w-full h-24 object-cover"
+                            loading="lazy"
+                        >
+                        <div class="absolute top-1 left-1">
+                            <span class="badge badge-new text-xs">New</span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-2">
+                        <h3 class="font-medium text-sm line-clamp-1">{{ product.title }}</h3>
+                        <p class="text-xs text-gray-600">{{ product.creator.get_full_name }}</p>
+                        <div class="mt-1">
+                            <span class="text-sm font-bold">R{{ product.price }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- AI Recommendations -->
+    {% if recommended_products %}
+    <section class="py-12 bg-gradient-to-r from-purple-50 to-blue-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                    {% if user.is_authenticated %}
+                        Recommended for You
+                    {% else %}
+                        Popular Products
+                    {% endif %}
+                </h2>
+                <p class="text-gray-600">
+                    {% if user.is_authenticated %}
+                        AI-powered recommendations based on your interests
+                    {% else %}
+                        Discover what others are loving
+                    {% endif %}
+                </p>
+            </div>
+            
+            <div class="product-grid">
+                {% for product in recommended_products %}
+                <div class="product-card">
+                    <div class="relative">
+                        <img 
+                            src="{{ product.featured_image.url|default:'/static/images/placeholder-product.jpg' }}" 
+                            alt="{{ product.title }}"
+                            class="w-full h-48 object-cover"
+                            loading="lazy"
+                        >
+                        {% if user.is_authenticated %}
+                        <div class="absolute top-2 left-2">
+                            <span class="badge bg-purple-100 text-purple-800">🤖 AI Pick</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2 line-clamp-2">{{ product.title }}</h3>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ product.short_description }}</p>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-700">{{ product.creator.get_full_name }}</span>
+                            <span class="text-lg font-bold text-gray-900">R{{ product.price }}</span>
+                        </div>
+                        
+                        <button class="w-full mt-4 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition font-medium">
+                            View Product
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- All Products Grid with Infinite Scroll -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">All Products</h2>
+                
+                <!-- Filter and Sort Controls -->
+                <div class="flex gap-4">
+                    <select 
+                        x-model="sortBy" 
+                        @change="loadProducts(true)"
+                        class="border border-gray-300 rounded-lg px-3 py-2"
+                    >
+                        <option value="trending">Trending</option>
+                        <option value="newest">Newest</option>
+                        <option value="price_low">Price: Low to High</option>
+                        <option value="price_high">Price: High to Low</option>
+                        <option value="rating">Top Rated</option>
+                        <option value="sales">Best Selling</option>
+                    </select>
+                    
+                    <select 
+                        x-model="filterType" 
+                        @change="loadProducts(true)"
+                        class="border border-gray-300 rounded-lg px-3 py-2"
+                    >
+                        <option value="all">All Products</option>
+                        <option value="featured">Featured</option>
+                        <option value="new">New Arrivals</option>
+                        <option value="trending">Trending</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="product-grid" id="products-grid">
+                <!-- Products will be loaded here via JavaScript -->
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div x-show="loading" class="text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p class="mt-2 text-gray-600">Loading products...</p>
+            </div>
+            
+            <!-- Load More Button -->
+            <div x-show="!loading && hasMore" class="text-center py-8">
+                <button 
+                    @click="loadProducts()"
+                    class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+                >
+                    Load More Products
+                </button>
+            </div>
+            
+            <!-- No More Products -->
+            <div x-show="!loading && !hasMore && products.length > 0" class="text-center py-8">
+                <p class="text-gray-600">You've seen all products!</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Guest User Modal -->
+{% if not user.is_authenticated %}
+<div x-data="{ showModal: false }" x-init="setTimeout(() => showModal = true, 30000)">
+    <div x-show="showModal" x-transition class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">Get Personalized Recommendations</h3>
+                <p class="text-gray-600 mb-6">Sign up to get AI-powered product recommendations tailored just for you!</p>
+                
+                <div class="flex gap-3">
+                    <button 
+                        @click="showModal = false"
+                        class="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-100 transition"
+                    >
+                        Maybe Later
+                    </button>
+                    <a 
+                        href="{% url 'account_signup' %}"
+                        class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition text-center"
+                    >
+                        Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function marketplaceApp() {
+    return {
+        products: [],
+        loading: false,
+        hasMore: true,
+        page: 1,
+        searchQuery: '',
+        suggestions: [],
+        selectedCategory: 'all',
+        sortBy: 'trending',
+        filterType: 'all',
+        
+        init() {
+            this.loadProducts(true);
+            this.setupInfiniteScroll();
+        },
+        
+        async loadProducts(reset = false) {
+            if (reset) {
+                this.products = [];
+                this.page = 1;
+                this.hasMore = true;
+            }
+            
+            if (this.loading || !this.hasMore) return;
+            
+            this.loading = true;
+            
+            try {
+                const params = new URLSearchParams({
+                    page: this.page,
+                    page_size: 20,
+                    category: this.selectedCategory,
+                    search: this.searchQuery,
+                    sort_by: this.sortBy,
+                    filter: this.filterType
+                });
+                
+                const response = await fetch(`/api/marketplace/?${params}`);
+                const data = await response.json();
+                
+                if (reset) {
+                    this.products = data.results;
+                } else {
+                    this.products.push(...data.results);
+                }
+                
+                this.hasMore = data.has_next;
+                this.page++;
+                
+                this.renderProducts(reset);
+            } catch (error) {
+                console.error('Failed to load products:', error);
+            } finally {
+                this.loading = false;
+            }
+        },
+        
+        renderProducts(reset = false) {
+            const grid = document.getElementById('products-grid');
+            
+            if (reset) {
+                grid.innerHTML = '';
+            }
+            
+            this.products.slice(reset ? 0 : this.products.length - 20).forEach(product => {
+                const productCard = this.createProductCard(product);
+                grid.appendChild(productCard);
+            });
+        },
+        
+        createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            const badges = [];
+            if (product.is_marketplace_promoted) badges.push('<span class="badge badge-featured">Featured</span>');
+            if (product.is_trending) badges.push('<span class="badge badge-trending">🔥 Trending</span>');
+            if (product.is_new) badges.push('<span class="badge badge-new">New</span>');
+            
+            card.innerHTML = `
+                <div class="relative">
+                    <img 
+                        src="${product.featured_image || '/static/images/placeholder-product.jpg'}" 
+                        alt="${product.title}"
+                        class="w-full h-48 object-cover"
+                        loading="lazy"
+                    >
+                    <div class="absolute top-2 left-2 flex flex-col gap-1">
+                        ${badges.join('')}
+                    </div>
+                    <div class="absolute top-2 right-2">
+                        <button class="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-4">
+                    <h3 class="font-semibold text-lg mb-2 line-clamp-2">${product.title}</h3>
+                    <p class="text-gray-600 text-sm mb-3 line-clamp-2">${product.short_description || ''}</p>
+                    
+                    <div class="flex items-center mb-3">
+                        <img 
+                            src="${product.creator_avatar || '/static/images/default-avatar.png'}" 
+                            alt="${product.creator_name}"
+                            class="w-6 h-6 rounded-full mr-2"
+                        >
+                        <span class="text-sm text-gray-700">${product.creator_name}</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        ${product.average_rating ? `
+                        <div class="flex items-center">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                ${'★'.repeat(Math.floor(product.average_rating))}${'☆'.repeat(5 - Math.floor(product.average_rating))}
+                            </div>
+                            <span class="text-sm text-gray-600">(${product.review_count})</span>
+                        </div>
+                        ` : '<div></div>'}
+                        
+                        <div class="text-right">
+                            ${product.sale_price && product.sale_price < product.price ? `
+                                <span class="text-lg font-bold text-green-600">R${product.sale_price}</span>
+                                <span class="text-sm text-gray-500 line-through ml-1">R${product.price}</span>
+                            ` : `
+                                <span class="text-lg font-bold text-gray-900">R${product.price}</span>
+                            `}
+                        </div>
+                    </div>
+                    
+                    <button 
+                        class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium"
+                        onclick="window.location.href='/products/${product.slug}/'"
+                    >
+                        View Product
+                    </button>
+                </div>
+            `;
+            
+            // Track product view for analytics
+            card.addEventListener('click', () => {
+                this.trackInteraction(product.id, 'view');
+            });
+            
+            return card;
+        },
+        
+        async searchProducts() {
+            if (this.searchQuery.length < 2) {
+                this.suggestions = [];
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/search-suggestions/?q=${encodeURIComponent(this.searchQuery)}`);
+                const data = await response.json();
+                this.suggestions = [
+                    ...data.suggestions.products,
+                    ...data.suggestions.categories,
+                    ...data.suggestions.tags
+                ].slice(0, 5);
+            } catch (error) {
+                console.error('Failed to get suggestions:', error);
+            }
+        },
+        
+        filterByCategory(category) {
+            this.selectedCategory = category;
+            this.loadProducts(true);
+        },
+        
+        performSearch() {
+            this.loadProducts(true);
+        },
+        
+        selectSuggestion(suggestion) {
+            this.searchQuery = suggestion;
+            this.suggestions = [];
+            this.performSearch();
+        },
+        
+        setupInfiniteScroll() {
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !this.loading && this.hasMore) {
+                    this.loadProducts();
+                }
+            }, { threshold: 0.1 });
+            
+            // Observe a sentinel element at the bottom
+            const sentinel = document.createElement('div');
+            sentinel.style.height = '1px';
+            document.querySelector('#products-grid').after(sentinel);
+            observer.observe(sentinel);
+        },
+        
+        async trackInteraction(productId, type) {
+            if (!window.user_authenticated) return;
+            
+            try {
+                await fetch('/api/track-interaction/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        type: type,
+                        duration: Date.now() - this.pageLoadTime
+                    })
+                });
+            } catch (error) {
+                console.error('Failed to track interaction:', error);
+            }
+        }
+    }
+}
+
+// Set global variables for tracking
+window.user_authenticated = {{ user.is_authenticated|yesno:"true,false" }};
+</script>
+{% endblock %}

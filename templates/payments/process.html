@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Processing - Digitera{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">Payment Processing</h1>
+            <p class="text-gray-600 mt-2">Please review your order and complete payment</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Order Summary -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
+                
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Order Number:</span>
+                        <span class="font-medium">{{ order.order_number }}</span>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4">
+                        <h3 class="font-medium text-gray-900 mb-3">Items</h3>
+                        {% for item in order_items %}
+                        <div class="flex justify-between items-start py-2">
+                            <div>
+                                <p class="font-medium text-gray-900">{{ item.product_name }}</p>
+                                <p class="text-sm text-gray-500">Qty: {{ item.quantity }}</p>
+                            </div>
+                            <p class="font-medium text-gray-900">R{{ item.total_price }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4 space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Subtotal:</span>
+                            <span class="font-medium">R{{ order.subtotal }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">VAT (15%):</span>
+                            <span class="font-medium">R{{ order.vat_amount }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Platform Fee:</span>
+                            <span class="font-medium">R{{ order.platform_fee_amount }}</span>
+                        </div>
+                        <div class="border-t border-gray-200 pt-2">
+                            <div class="flex justify-between text-lg font-semibold">
+                                <span>Total:</span>
+                                <span>R{{ order.total_amount }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Form -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Complete Payment</h2>
+                
+                <form method="post" id="payment-form">
+                    {% csrf_token %}
+                    
+                    <div class="mb-6">
+                        <div class="flex items-center space-x-3 p-4 border border-green-200 bg-green-50 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-green-900">Demo Payment Mode</h3>
+                                <p class="text-sm text-green-700">This is a demo. Click "Complete Payment" to simulate successful payment.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
+                            <input type="text" value="4111 1111 1111 1111" readonly 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Expiry</label>
+                                <input type="text" value="12/25" readonly 
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">CVV</label>
+                                <input type="text" value="123" readonly 
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="payment-button"
+                            class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors mt-6">
+                        Complete Payment - R{{ order.total_amount }}
+                    </button>
+                </form>
+                
+                <div class="mt-4 flex items-center justify-center space-x-2 text-xs text-gray-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <span>Secure SSL Encrypted Payment</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Processing overlay -->
+<div id="processing-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Processing Payment</h3>
+        <p class="text-gray-600">Please wait while we process your payment...</p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('payment-form');
+    const submitButton = document.getElementById('payment-button');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show processing overlay
+        document.getElementById('processing-overlay').classList.remove('hidden');
+        submitButton.disabled = true;
+        
+        // Simulate processing time
+        setTimeout(() => {
+            form.submit();
+        }, 2000);
+    });
+});
+</script>
+{% endblock %}

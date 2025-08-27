@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Order #{{ order.order_number }} - Digitera{% endblock %}
+
+{% block main_classes %}bg-gray-50{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <div class="flex items-center space-x-4 mb-2">
+                <a href="{% url 'orders:list' %}" class="text-gray-600 hover:text-gray-900">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1 class="text-3xl font-bold text-gray-900">Order #{{ order.order_number }}</h1>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                    {% if order.status == 'completed' %}bg-green-100 text-green-800
+                    {% elif order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                    {% elif order.status == 'failed' %}bg-red-100 text-red-800
+                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                    {{ order.get_status_display }}
+                </span>
+            </div>
+            <p class="text-gray-600">
+                Ordered on {{ order.created_at|date:"F d, Y \a\t g:i A" }}
+            </p>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            {% if order.status == 'completed' %}
+            <a href="{% url 'orders:invoice' order.id %}" 
+               class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+                <i class="fas fa-file-invoice mr-2"></i>
+                Download Invoice
+            </a>
+            {% endif %}
+            <button onclick="printOrder()" 
+                    class="border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition duration-200">
+                <i class="fas fa-print mr-2"></i>
+                Print
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Order Items -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Order Items</h2>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-6">
+                        {% for item in order.items.all %}
+                        <div class="flex items-start space-x-4 pb-6 {% if not forloop.last %}border-b border-gray-200{% endif %}">
+                            <div class="flex-shrink-0">
+                                {% if item.product.cover_image %}
+                                <img src="{{ item.product.cover_image.url }}" alt="{{ item.product.name }}" 
+                                     class="w-20 h-20 object-cover rounded-lg">
+                                {% else %}
+                                <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-image text-gray-400 text-xl"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">
+                                    <a href="{% url 'products:detail' item.product.id %}" class="hover:text-blue-600">
+                                        {{ item.product.name }}
+                                    </a>
+                                </h3>
+                                <p class="text-sm text-gray-600 mb-2">{{ item.product.get_category_display }}</p>
+                                <p class="text-sm text-gray-700 mb-4">{{ item.product.description|truncatewords:20 }}</p>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                        <span>Quantity: {{ item.quantity }}</span>
+                                        <span>Price: R{{ item.price|floatformat:2 }}</span>
+                                        {% if order.status == 'completed' %}
+                                        <span>Downloaded: {{ item.download_count }} times</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if order.status == 'completed' %}
+                                    <a href="{% url 'orders:download_product' item.id %}" 
+                                       class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200 text-sm">
+                                        <i class="fas fa-download mr-1"></i>
+                                        Download
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- File Information -->
+                                {% if order.status == 'completed' %}
+                                <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                                    <h4 class="text-sm font-medium text-gray-700 mb-2">Included Files:</h4>
+                                    <div class="space-y-1">
+                                        {% for file in item.product.product_files.all %}
+                                        <div class="flex items-center text-sm text-gray-600">
+                                            <i class="fas fa-file mr-2"></i>
+                                            <span>{{ file.original_filename }}</span>
+                                            <span class="ml-auto">{{ file.file_size|filesizeformat }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Timeline -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-6">Order Timeline</h2>
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Order Placed</p>
+                            <p class="text-sm text-gray-600">{{ order.created_at|date:"F d, Y \a\t g:i A" }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if order.payment %}
+                    <div class="flex items-center space-x-4">
+                        <div class="w-3 h-3 {% if order.payment.status == 'completed' %}bg-green-500{% elif order.payment.status == 'failed' %}bg-red-500{% else %}bg-yellow-500{% endif %} rounded-full"></div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Payment {{ order.payment.get_status_display }}</p>
+                            <p class="text-sm text-gray-600">{{ order.payment.updated_at|date:"F d, Y \a\t g:i A" }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if order.status == 'completed' %}
+                    <div class="flex items-center space-x-4">
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Download Links Sent</p>
+                            <p class="text-sm text-gray-600">{{ order.completed_at|date:"F d, Y \a\t g:i A" }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Order Actions -->
+            {% if order.status == 'completed' %}
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Need Help?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="requestRefund()" 
+                            class="flex items-center justify-center px-4 py-3 border border-red-300 text-red-700 rounded-md hover:bg-red-50 transition duration-200">
+                        <i class="fas fa-undo mr-2"></i>
+                        Request Refund
+                    </button>
+                    <a href="{% url 'orders:support' order.id %}" 
+                       class="flex items-center justify-center px-4 py-3 border border-blue-300 text-blue-700 rounded-md hover:bg-blue-50 transition duration-200">
+                        <i class="fas fa-headset mr-2"></i>
+                        Contact Support
+                    </a>
+                </div>
+                <p class="text-sm text-gray-600 mt-3">
+                    <i class="fas fa-shield-alt text-green-500 mr-1"></i>
+                    Protected by our 30-day money-back guarantee
+                </p>
+            </div>
+            {% elif order.status == 'pending' %}
+            <div class="bg-yellow-50 rounded-lg border border-yellow-200 p-6">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                    <div>
+                        <h3 class="text-lg font-medium text-yellow-800">Payment Processing</h3>
+                        <p class="text-yellow-700">
+                            Your payment is being processed. You'll receive download links once payment is confirmed.
+                        </p>
+                        <a href="{% url 'payments:status' order.payment.id %}" 
+                           class="inline-block mt-3 text-yellow-600 hover:text-yellow-800 font-medium">
+                            Check Payment Status →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% elif order.status == 'failed' %}
+            <div class="bg-red-50 rounded-lg border border-red-200 p-6">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    <div>
+                        <h3 class="text-lg font-medium text-red-800">Payment Failed</h3>
+                        <p class="text-red-700 mb-4">
+                            There was an issue processing your payment. Please try again or contact our support team.
+                        </p>
+                        <div class="flex items-center space-x-3">
+                            <a href="{% url 'payments:retry' order.payment.id %}" 
+                               class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-200">
+                                Retry Payment
+                            </a>
+                            <a href="{% url 'orders:support' order.id %}" 
+                               class="text-red-600 hover:text-red-800 font-medium">
+                                Get Help
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Order Summary -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Subtotal:</span>
+                        <span class="text-gray-900">R{{ order.subtotal|floatformat:2 }}</span>
+                    </div>
+                    {% if order.tax_amount %}
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">VAT (15%):</span>
+                        <span class="text-gray-900">R{{ order.tax_amount|floatformat:2 }}</span>
+                    </div>
+                    {% endif %}
+                    {% if order.discount_amount %}
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Discount:</span>
+                        <span class="text-green-600">-R{{ order.discount_amount|floatformat:2 }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="border-t border-gray-200 pt-3">
+                        <div class="flex justify-between">
+                            <span class="text-lg font-medium text-gray-900">Total:</span>
+                            <span class="text-lg font-bold text-gray-900">R{{ order.total_amount|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Information -->
+            {% if order.payment %}
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Details</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Payment Method:</span>
+                        <span class="text-gray-900">{{ order.payment.get_method_display }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Transaction ID:</span>
+                        <span class="text-gray-900 font-mono">{{ order.payment.transaction_id|default:"Pending" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="{% if order.payment.status == 'completed' %}text-green-600{% elif order.payment.status == 'failed' %}text-red-600{% else %}text-yellow-600{% endif %}">
+                            {{ order.payment.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Billing Information -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Billing Information</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="font-medium text-gray-900">{{ order.billing_name }}</div>
+                    <div class="text-gray-600">{{ order.billing_email }}</div>
+                    {% if order.billing_address %}
+                    <div class="text-gray-600">{{ order.billing_address }}</div>
+                    {% endif %}
+                    {% if order.billing_city %}
+                    <div class="text-gray-600">{{ order.billing_city }}, {{ order.billing_country }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Support -->
+            <div class="bg-blue-50 rounded-lg border border-blue-200 p-6">
+                <h3 class="text-lg font-semibold text-blue-900 mb-2">Need Assistance?</h3>
+                <p class="text-blue-700 text-sm mb-4">
+                    Our South African support team is here to help with any questions about your order.
+                </p>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center text-blue-700">
+                        <i class="fas fa-envelope mr-2"></i>
+                        <span>support@digitera.co.za</span>
+                    </div>
+                    <div class="flex items-center text-blue-700">
+                        <i class="fas fa-phone mr-2"></i>
+                        <span>+27 21 123 4567</span>
+                    </div>
+                    <div class="flex items-center text-blue-700">
+                        <i class="fas fa-clock mr-2"></i>
+                        <span>Mon-Fri 8:00-17:00 SAST</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function printOrder() {
+    window.print();
+}
+
+function requestRefund() {
+    if (confirm('Are you sure you want to request a refund for this order?')) {
+        // Redirect to refund request page
+        window.location.href = `/orders/{{ order.id }}/refund/`;
+    }
+}
+</script>
+
+<style>
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+    }
+    
+    .bg-gray-50 {
+        background: white !important;
+    }
+    
+    .shadow-sm,
+    .shadow-lg {
+        box-shadow: none !important;
+    }
+}
+</style>
+{% endblock %}

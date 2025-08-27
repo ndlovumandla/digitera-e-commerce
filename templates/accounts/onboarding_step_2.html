@@ -1,0 +1,522 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Your Storefront - Step {{ step }} of {{ total_steps }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .onboarding-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+    .step-indicator {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    .color-preset {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .color-preset:hover {
+        transform: scale(1.1);
+        border-color: #3B82F6;
+    }
+    .color-preset.selected {
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+    .theme-card {
+        border: 2px solid #E5E7EB;
+        border-radius: 12px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .theme-card:hover {
+        border-color: #3B82F6;
+        transform: translateY(-2px);
+    }
+    .theme-card.selected {
+        border-color: #3B82F6;
+        background-color: #EBF8FF;
+    }
+    .upload-area {
+        border: 2px dashed #D1D5DB;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .upload-area:hover {
+        border-color: #3B82F6;
+        background-color: #F9FAFB;
+    }
+    .upload-area.dragover {
+        border-color: #3B82F6;
+        background-color: #EBF8FF;
+    }
+    .preview-frame {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        border: 1px solid #E5E7EB;
+        min-height: 200px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="onboarding-container">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Progress Header -->
+        <div class="step-indicator mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">{{ step_title }}</h1>
+                    <p class="text-gray-600">{{ step_description }}</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-medium text-gray-500">Step {{ step }} of {{ total_steps }}</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ progress_percentage }}%</div>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-gradient-to-r from-blue-600 to-green-600 h-3 rounded-full transition-all duration-500" 
+                     style="width: {{ progress_percentage }}%"></div>
+            </div>
+            
+            <!-- Step Indicators -->
+            <div class="flex justify-between mt-4">
+                {% for i in "1234"|make_list %}
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
+                                    {% if forloop.counter <= step %}bg-blue-600 text-white{% else %}bg-gray-300 text-gray-600{% endif %}">
+                            {{ forloop.counter }}
+                        </div>
+                        {% if not forloop.last %}
+                            <div class="hidden sm:block w-16 h-1 mx-2 {% if forloop.counter < step %}bg-blue-600{% else %}bg-gray-300{% endif %}"></div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <div class="form-card">
+                <form method="post" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+
+                    <!-- Store Basic Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-store text-blue-600 mr-2"></i>
+                            Store Information
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="{{ form.store_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Store Name *
+                                </label>
+                                {{ form.store_name }}
+                                {% if form.store_name.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.store_name.errors.0 }}</p>
+                                {% endif %}
+                                <p class="mt-1 text-xs text-gray-500">This will be your store's public name</p>
+                                {% if current_store_url %}
+                                    <p class="mt-1 text-xs text-blue-600">Your store URL: {{ current_store_url }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div>
+                                <label for="{{ form.store_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Store Description *
+                                </label>
+                                {{ form.store_description }}
+                                {% if form.store_description.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.store_description.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div>
+                                <label for="{{ form.business_category.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Business Category *
+                                </label>
+                                {{ form.business_category }}
+                                {% if form.business_category.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.business_category.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logo and Banner Upload -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-images text-blue-600 mr-2"></i>
+                            Brand Assets
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Logo Upload -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Store Logo
+                                </label>
+                                <div class="upload-area" id="logo-upload-area">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                    <p class="text-sm text-gray-600">Click to upload logo</p>
+                                    <p class="text-xs text-gray-500">PNG, JPG up to 2MB</p>
+                                    {{ form.logo_upload }}
+                                </div>
+                                <div id="logo-preview" class="mt-2 hidden">
+                                    <img class="w-20 h-20 object-cover rounded-lg" alt="Logo preview">
+                                </div>
+                            </div>
+
+                            <!-- Banner Upload -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Store Banner
+                                </label>
+                                <div class="upload-area" id="banner-upload-area">
+                                    <i class="fas fa-panorama text-3xl text-gray-400 mb-2"></i>
+                                    <p class="text-sm text-gray-600">Click to upload banner</p>
+                                    <p class="text-xs text-gray-500">PNG, JPG up to 5MB</p>
+                                    {{ form.banner_upload }}
+                                </div>
+                                <div id="banner-preview" class="mt-2 hidden">
+                                    <img class="w-full h-24 object-cover rounded-lg" alt="Banner preview">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Color Scheme -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-palette text-blue-600 mr-2"></i>
+                            Brand Colors
+                        </h3>
+                        
+                        <!-- Color Presets -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Color Presets</label>
+                            <div class="flex space-x-3">
+                                {% for preset in color_presets %}
+                                    <div class="color-preset" 
+                                         data-primary="{{ preset.primary }}" 
+                                         data-secondary="{{ preset.secondary }}"
+                                         data-name="{{ preset.name }}"
+                                         style="background: linear-gradient(45deg, {{ preset.primary }} 50%, {{ preset.secondary }} 50%);"
+                                         title="{{ preset.name }}">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Manual Color Selection -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="{{ form.primary_color.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Primary Color
+                                </label>
+                                <div class="flex items-center space-x-3">
+                                    {{ form.primary_color }}
+                                    <span id="primary-color-display" class="text-sm font-mono text-gray-600">{{ form.primary_color.value|default:"#3B82F6" }}</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="{{ form.secondary_color.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Secondary Color
+                                </label>
+                                <div class="flex items-center space-x-3">
+                                    {{ form.secondary_color }}
+                                    <span id="secondary-color-display" class="text-sm font-mono text-gray-600">{{ form.secondary_color.value|default:"#10B981" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Theme Selection -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-paint-brush text-blue-600 mr-2"></i>
+                            Store Theme
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {% for choice in form.store_theme %}
+                                <div class="theme-card" data-theme="{{ choice.choice_value }}">
+                                    {{ choice.tag }}
+                                    <label for="{{ choice.id_for_label }}" class="block cursor-pointer">
+                                        <div class="font-medium text-gray-900">{{ choice.choice_label|truncatechars:20 }}</div>
+                                        <div class="text-sm text-gray-600">{{ choice.choice_label|slice:"20:" }}</div>
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- SEO Settings -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-search text-blue-600 mr-2"></i>
+                            SEO & Marketing
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="{{ form.meta_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Meta Description
+                                </label>
+                                {{ form.meta_description }}
+                                {% if form.meta_description.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.meta_description.errors.0 }}</p>
+                                {% endif %}
+                                <p class="mt-1 text-xs text-gray-500">{{ form.meta_description.help_text }}</p>
+                            </div>
+
+                            <div class="flex items-start">
+                                {{ form.enable_custom_domain }}
+                                <label for="{{ form.enable_custom_domain.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                    {{ form.enable_custom_domain.label }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                        <a href="{% url 'accounts:onboarding_step_1' %}" 
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Back
+                        </a>
+                        
+                        <button type="submit" 
+                                class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 transform hover:scale-105 transition duration-300">
+                            Continue to Products
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Live Preview Section -->
+            <div class="form-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-eye text-blue-600 mr-2"></i>
+                    Live Preview
+                </h3>
+                
+                <div class="preview-frame" id="storefront-preview">
+                    <!-- Store Header -->
+                    <div class="border-b border-gray-200 pb-4 mb-4">
+                        <div class="flex items-center space-x-4">
+                            <div id="preview-logo" class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-store text-gray-400"></i>
+                            </div>
+                            <div>
+                                <h4 id="preview-store-name" class="font-semibold text-gray-900">Your Store Name</h4>
+                                <p id="preview-store-description" class="text-sm text-gray-600">Your store description will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Color Theme Preview -->
+                    <div class="space-y-3">
+                        <div id="preview-primary-btn" class="inline-block px-4 py-2 rounded-lg text-white text-sm font-medium" 
+                             style="background-color: #3B82F6;">
+                            Primary Button
+                        </div>
+                        <div id="preview-secondary-btn" class="inline-block px-4 py-2 rounded-lg text-white text-sm font-medium ml-2" 
+                             style="background-color: #10B981;">
+                            Secondary Button
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div id="preview-accent" class="h-2 rounded-full" style="background-color: #3B82F6;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Theme Preview -->
+                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">
+                            Theme: <span id="preview-theme" class="font-medium">Modern</span>
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Your storefront will use this theme with your selected colors
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Quick Tips -->
+                <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 class="text-sm font-semibold text-blue-900 mb-2">
+                        <i class="fas fa-lightbulb mr-1"></i>
+                        Branding Tips
+                    </h4>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                        <li>• Use high-contrast colors for better readability</li>
+                        <li>• Keep your logo simple and recognizable</li>
+                        <li>• Choose colors that reflect your brand personality</li>
+                        <li>• Ensure your banner image is at least 1200x300px</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // File upload handling
+    setupFileUpload('logo-upload-area', 'logo-upload', 'logo-preview');
+    setupFileUpload('banner-upload-area', 'banner-upload', 'banner-preview');
+    
+    // Color preset handling
+    document.querySelectorAll('.color-preset').forEach(preset => {
+        preset.addEventListener('click', function() {
+            document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            const primary = this.dataset.primary;
+            const secondary = this.dataset.secondary;
+            
+            document.getElementById('primary-color').value = primary;
+            document.getElementById('secondary-color').value = secondary;
+            
+            updatePreview();
+        });
+    });
+    
+    // Theme selection handling
+    document.querySelectorAll('.theme-card').forEach(card => {
+        card.addEventListener('click', function() {
+            document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            updatePreview();
+        });
+    });
+    
+    // Color change handlers
+    document.getElementById('primary-color').addEventListener('change', function() {
+        document.getElementById('primary-color-display').textContent = this.value;
+        updatePreview();
+    });
+    
+    document.getElementById('secondary-color').addEventListener('change', function() {
+        document.getElementById('secondary-color-display').textContent = this.value;
+        updatePreview();
+    });
+    
+    // Store info change handlers
+    document.getElementById('{{ form.store_name.id_for_label }}').addEventListener('input', updatePreview);
+    document.getElementById('{{ form.store_description.id_for_label }}').addEventListener('input', updatePreview);
+    
+    // Initial preview update
+    updatePreview();
+    
+    function setupFileUpload(areaId, inputId, previewId) {
+        const area = document.getElementById(areaId);
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        
+        area.addEventListener('click', () => input.click());
+        
+        area.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+        
+        area.addEventListener('dragleave', function() {
+            this.classList.remove('dragover');
+        });
+        
+        area.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                input.files = files;
+                showPreview(files[0], preview);
+            }
+        });
+        
+        input.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                showPreview(this.files[0], preview);
+            }
+        });
+    }
+    
+    function showPreview(file, previewElement) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = previewElement.querySelector('img');
+            img.src = e.target.result;
+            previewElement.classList.remove('hidden');
+            
+            // Update live preview if it's a logo
+            if (previewElement.id === 'logo-preview') {
+                document.getElementById('preview-logo').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-lg">`;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    function updatePreview() {
+        const storeName = document.getElementById('{{ form.store_name.id_for_label }}').value || 'Your Store Name';
+        const storeDescription = document.getElementById('{{ form.store_description.id_for_label }}').value || 'Your store description will appear here';
+        const primaryColor = document.getElementById('primary-color').value;
+        const secondaryColor = document.getElementById('secondary-color').value;
+        const selectedTheme = document.querySelector('input[name="store_theme"]:checked');
+        
+        document.getElementById('preview-store-name').textContent = storeName;
+        document.getElementById('preview-store-description').textContent = storeDescription;
+        document.getElementById('preview-primary-btn').style.backgroundColor = primaryColor;
+        document.getElementById('preview-secondary-btn').style.backgroundColor = secondaryColor;
+        document.getElementById('preview-accent').style.backgroundColor = primaryColor;
+        
+        if (selectedTheme) {
+            const themeName = selectedTheme.nextElementSibling.querySelector('.font-medium').textContent;
+            document.getElementById('preview-theme').textContent = themeName;
+        }
+    }
+    
+    // Form submission
+    const form = document.querySelector('form');
+    const submitButton = form.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', function() {
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Storefront...';
+        submitButton.disabled = true;
+    });
+});
+</script>
+{% endblock %}

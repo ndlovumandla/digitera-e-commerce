@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Orders - Digitera{% endblock %}
+
+{% block main_classes %}bg-gray-50{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">My Orders</h1>
+            <p class="text-gray-600 mt-2">Track your purchases and download your digital products</p>
+        </div>
+        
+        <a href="{% url 'products:marketplace' %}" 
+           class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-200">
+            <i class="fas fa-shopping-bag mr-2"></i>
+            Continue Shopping
+        </a>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+                <a href="?status=all" 
+                   class="{% if not request.GET.status or request.GET.status == 'all' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    All Orders
+                    <span class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2.5 rounded-full text-xs">{{ orders.count }}</span>
+                </a>
+                <a href="?status=completed" 
+                   class="{% if request.GET.status == 'completed' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Completed
+                    <span class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2.5 rounded-full text-xs">{{ completed_count }}</span>
+                </a>
+                <a href="?status=pending" 
+                   class="{% if request.GET.status == 'pending' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Pending
+                    <span class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2.5 rounded-full text-xs">{{ pending_count }}</span>
+                </a>
+                <a href="?status=refunded" 
+                   class="{% if request.GET.status == 'refunded' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Refunded
+                    <span class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2.5 rounded-full text-xs">{{ refunded_count }}</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    {% if orders %}
+    <!-- Orders List -->
+    <div class="space-y-6">
+        {% for order in orders %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <!-- Order Header -->
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-6">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Order #{{ order.order_number }}</p>
+                            <p class="text-sm text-gray-600">{{ order.created_at|date:"F d, Y \a\t g:i A" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Total</p>
+                            <p class="text-sm font-medium text-gray-900">R{{ order.total_amount|floatformat:2 }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Status</p>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if order.status == 'completed' %}bg-green-100 text-green-800
+                                {% elif order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                {% elif order.status == 'failed' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        {% if order.status == 'completed' %}
+                        <a href="{% url 'orders:invoice' order.id %}" 
+                           class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            <i class="fas fa-file-invoice mr-1"></i>
+                            Invoice
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'orders:detail' order.id %}" 
+                           class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="px-6 py-4">
+                <div class="space-y-4">
+                    {% for item in order.items.all %}
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            {% if item.product.cover_image %}
+                            <img src="{{ item.product.cover_image.url }}" alt="{{ item.product.name }}" 
+                                 class="w-16 h-16 object-cover rounded-lg">
+                            {% else %}
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-image text-gray-400"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-medium text-gray-900 truncate">
+                                <a href="{% url 'products:detail' item.product.id %}" class="hover:text-blue-600">
+                                    {{ item.product.name }}
+                                </a>
+                            </h4>
+                            <p class="text-sm text-gray-600">{{ item.product.get_category_display }}</p>
+                            <div class="flex items-center space-x-4 mt-2">
+                                <span class="text-sm text-gray-600">Qty: {{ item.quantity }}</span>
+                                <span class="text-sm font-medium text-gray-900">R{{ item.price|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                        
+                        {% if order.status == 'completed' %}
+                        <div class="flex items-center space-x-2">
+                            <a href="{% url 'orders:download_product' item.id %}" 
+                               class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200 text-sm">
+                                <i class="fas fa-download mr-1"></i>
+                                Download
+                            </a>
+                            <span class="text-xs text-gray-500">{{ item.download_count }}/{{ item.download_limit|default:"∞" }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Order Actions -->
+            {% if order.status == 'completed' %}
+            <div class="bg-gray-50 px-6 py-3 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4 text-sm text-gray-600">
+                        <span class="flex items-center">
+                            <i class="fas fa-shield-alt text-green-500 mr-1"></i>
+                            30-day money-back guarantee
+                        </span>
+                        <span class="flex items-center">
+                            <i class="fas fa-download text-blue-500 mr-1"></i>
+                            Downloads: {{ order.total_downloads }}
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button onclick="requestRefund({{ order.id }})" 
+                                class="text-red-600 hover:text-red-800 text-sm font-medium">
+                            Request Refund
+                        </button>
+                        <a href="mailto:support@digitera.co.za" 
+                           class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            Get Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% elif order.status == 'pending' %}
+            <div class="bg-yellow-50 px-6 py-3 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-sm text-yellow-800">
+                        <i class="fas fa-clock mr-2"></i>
+                        Payment is being processed. You'll receive download links once payment is confirmed.
+                    </div>
+                    <a href="{% url 'orders:detail' order.id %}" 
+                       class="text-yellow-600 hover:text-yellow-800 text-sm font-medium">
+                        Check Payment Status
+                    </a>
+                </div>
+            </div>
+            {% elif order.status == 'failed' %}
+            <div class="bg-red-50 px-6 py-3 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-sm text-red-800">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        Payment failed. Please try again or contact support.
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <a href="{% url 'payments:retry' order.payment.id %}" 
+                           class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                            Retry Payment
+                        </a>
+                        <a href="mailto:support@digitera.co.za" 
+                           class="text-red-600 hover:text-red-800 text-sm font-medium">
+                            Get Help
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if orders.has_other_pages %}
+    <div class="flex items-center justify-center space-x-2 mt-8">
+        {% if orders.has_previous %}
+        <a href="?page={{ orders.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+           class="px-3 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+        
+        {% for num in orders.paginator.page_range %}
+        {% if orders.number == num %}
+        <span class="px-4 py-2 bg-blue-600 text-white rounded-md">{{ num }}</span>
+        {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+        <a href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+           class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+            {{ num }}
+        </a>
+        {% endif %}
+        {% endfor %}
+        
+        {% if orders.has_next %}
+        <a href="?page={{ orders.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+           class="px-3 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-16">
+        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-shopping-bag text-3xl text-blue-600"></i>
+        </div>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">No orders yet</h3>
+        <p class="text-gray-600 mb-6">Start exploring our marketplace and discover amazing digital products from South African creators.</p>
+        <a href="{% url 'products:marketplace' %}" 
+           class="inline-block bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-200">
+            <i class="fas fa-search mr-2"></i>
+            Browse Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Refund Modal -->
+<div id="refund-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Request Refund</h3>
+                <button onclick="closeRefundModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="refund-form" method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="refund-reason" class="block text-sm font-medium text-gray-700 mb-2">Reason for refund</label>
+                    <select name="reason" id="refund-reason" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select a reason</option>
+                        <option value="not_as_described">Product not as described</option>
+                        <option value="technical_issues">Technical issues</option>
+                        <option value="accidental_purchase">Accidental purchase</option>
+                        <option value="better_alternative">Found better alternative</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="refund-details" class="block text-sm font-medium text-gray-700 mb-2">Additional details</label>
+                    <textarea name="details" id="refund-details" rows="3"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Please provide more details about your refund request..."></textarea>
+                </div>
+                
+                <div class="flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeRefundModal()" 
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                        Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentOrderId = null;
+
+function requestRefund(orderId) {
+    currentOrderId = orderId;
+    document.getElementById('refund-modal').classList.remove('hidden');
+    document.getElementById('refund-form').action = `/orders/${orderId}/refund/`;
+}
+
+function closeRefundModal() {
+    document.getElementById('refund-modal').classList.add('hidden');
+    currentOrderId = null;
+}
+
+// Close modal when clicking outside
+document.getElementById('refund-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeRefundModal();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Your First Product - Step {{ step }} of {{ total_steps }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Progress Header -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">{{ step_title }}</h1>
+                    <p class="text-gray-600">{{ step_description }}</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-medium text-gray-500">Step {{ step }} of {{ total_steps }}</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ progress_percentage }}%</div>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-gradient-to-r from-blue-600 to-green-600 h-3 rounded-full transition-all duration-500 w-3/4"></div>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <div class="bg-white rounded-lg shadow p-8">
+            <form method="post" enctype="multipart/form-data" class="space-y-8">
+                {% csrf_token %}
+
+                <!-- Product Type Selection -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Choose Your Product Type</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for choice in form.product_type %}
+                            <div class="border border-gray-300 rounded-lg p-4 hover:border-blue-500 cursor-pointer">
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}" class="block cursor-pointer">
+                                    <div class="font-medium text-gray-900">{{ choice.choice_label|slice:":20" }}</div>
+                                    <div class="text-sm text-gray-600">{{ choice.choice_label|slice:"20:" }}</div>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Basic Product Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Product Title *
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.price.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Price (ZAR) *
+                        </label>
+                        {{ form.price }}
+                        {% if form.price.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.price.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description *
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Category and Tags -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Category *
+                        </label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.category.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.tags.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Tags
+                        </label>
+                        {{ form.tags }}
+                        {% if form.tags.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.tags.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">{{ form.tags.help_text }}</p>
+                    </div>
+                </div>
+
+                <!-- Publishing Options -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-3">Publishing Options</h4>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            {{ form.publish_immediately }}
+                            <label for="{{ form.publish_immediately.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                {{ form.publish_immediately.label }}
+                            </label>
+                        </div>
+                        <div class="flex items-center">
+                            {{ form.add_to_marketplace }}
+                            <label for="{{ form.add_to_marketplace.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                {{ form.add_to_marketplace.label }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                    <a href="{% url 'accounts:onboarding_step_2' %}" 
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back
+                    </a>
+                    
+                    <div class="flex space-x-3">
+                        <button type="button" 
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                                onclick="skipStep()">
+                            Skip for Now
+                        </button>
+                        <button type="submit" 
+                                class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
+                            Create Product & Continue
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Product Examples -->
+        <div class="mt-8 bg-blue-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-blue-900 mb-4">Product Examples</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for type, examples in product_examples.items %}
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 capitalize">{{ type|title }}</h4>
+                        <p class="text-sm text-gray-600">{{ examples }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function skipStep() {
+    if (confirm('Are you sure you want to skip adding a product? You can add products later from your dashboard.')) {
+        fetch('{% url "accounts:skip_onboarding_step" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect_url;
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

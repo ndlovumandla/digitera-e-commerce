@@ -1,0 +1,950 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Update Creator Profile - Digitera{% endblock %}
+
+{% block extra_head %}
+<style>
+    .creator-form-container {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 200px);
+        padding: 40px 0;
+    }
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        border: none;
+        margin-bottom: 30px;
+    }
+    .form-card .card-header {
+        background: linear-gradient(135deg, #3B82F6 0%, #1d4ed8 100%);
+        color: white;
+        border-radius: 12px 12px 0 0 !important;
+        border: none;
+        padding: 20px 25px;
+    }
+    .form-card .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    .form-card .card-body {
+        padding: 30px 25px;
+    }
+    .progress-container {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .progress-steps-wrapper {
+        position: relative;
+        margin: 0;
+    }
+    .progress-line {
+        position: absolute;
+        top: 17px;
+        left: 10%;
+        right: 10%;
+        height: 3px;
+        background: #e2e8f0;
+        z-index: 1;
+        border-radius: 2px;
+    }
+    .progress-step {
+        text-align: center;
+        position: relative;
+        flex: 1;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 2;
+    }
+    .progress-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        border: 2px solid #e2e8f0;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 8px;
+        font-weight: bold;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    .progress-step.active .progress-circle {
+        background: #3B82F6;
+        border-color: #3B82F6;
+        color: white;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    }
+    .progress-step.completed .progress-circle {
+        background: #10b981;
+        border-color: #10b981;
+        color: white;
+    }
+    .progress-number {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    .progress-check {
+        font-size: 1rem;
+    }
+    .progress-label {
+        font-size: 0.85rem;
+        color: #6b7280;
+        font-weight: 500;
+        margin-top: 2px;
+    }
+    .progress-step.active .progress-label {
+        color: #3B82F6;
+        font-weight: 600;
+    }
+    .progress-step.completed .progress-label {
+        color: #10b981;
+        font-weight: 600;
+    }
+    .form-step {
+        transition: all 0.3s ease-in-out;
+    }
+    .form-section-title {
+        color: #1f2937;
+        font-weight: 600;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .btn-gradient {
+        background: linear-gradient(135deg, #3B82F6 0%, #1d4ed8 100%);
+        border: none;
+        color: white;
+        font-weight: 500;
+        padding: 12px 30px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    .file-upload-zone {
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        padding: 30px 20px;
+        text-align: center;
+        background: #f9fafb;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .file-upload-zone:hover {
+        border-color: #3B82F6;
+        background: #eff6ff;
+    }
+    .file-upload-zone input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .color-input-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .color-preview {
+        width: 50px;
+        height: 38px;
+        border-radius: 6px;
+        border: 2px solid #e5e7eb;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .color-preview input[type="color"] {
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        width: calc(100% + 10px);
+        height: calc(100% + 10px);
+        border: none;
+        cursor: pointer;
+    }
+    .sidebar-card {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 1px solid #3B82F6;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+    .sidebar-card .card-body {
+        padding: 25px;
+    }
+    .help-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .help-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .help-list li:last-child {
+        border-bottom: none;
+    }
+    .help-icon {
+        color: #3B82F6;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    .required-star {
+        color: #dc2626;
+        margin-left: 3px;
+    }
+    .form-control:focus {
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+    }
+    .form-select:focus {
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="creator-form-container">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 mb-2 text-dark">Update Creator Profile</h1>
+                        <p class="text-muted">Manage your storefront settings and business information</p>
+                    </div>
+                    <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-container mb-4">
+            <div class="row">
+                <div class="col-12">
+                    <div class="progress-steps-wrapper">
+                        <div class="progress-line"></div>
+                        <div class="d-flex justify-content-between position-relative">
+                            <div class="progress-step active" data-step="1">
+                                <div class="progress-circle">
+                                    <span class="progress-number">1</span>
+                                    <i class="fas fa-check progress-check d-none"></i>
+                                </div>
+                                <div class="progress-label">Store Info</div>
+                            </div>
+                            <div class="progress-step" data-step="2">
+                                <div class="progress-circle">
+                                    <span class="progress-number">2</span>
+                                    <i class="fas fa-check progress-check d-none"></i>
+                                </div>
+                                <div class="progress-label">Branding</div>
+                            </div>
+                            <div class="progress-step" data-step="3">
+                                <div class="progress-circle">
+                                    <span class="progress-number">3</span>
+                                    <i class="fas fa-check progress-check d-none"></i>
+                                </div>
+                                <div class="progress-label">Banking</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" id="creatorProfileForm">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Step 1: Store Information Card -->
+                    <div class="card form-card form-step" id="step-1">
+                        <div class="card-header">
+                            <h5 class="form-section-title">
+                                <i class="fas fa-store"></i>Step 1: Store Information
+                            </h5>
+                            <p class="text-muted mb-0">Tell us about your business and what you offer</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_store_name" class="form-label fw-semibold">
+                                        Store Name<span class="required-star">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="id_store_name" 
+                                           name="store_name"
+                                           value="{% if form.store_name.value %}{{ form.store_name.value }}{% endif %}"
+                                           placeholder="Your Store Name" 
+                                           required>
+                                    <div class="form-text">This will be displayed as your public store name</div>
+                                    {% if form.store_name.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.store_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_business_category" class="form-label fw-semibold">
+                                        Business Category<span class="required-star">*</span>
+                                    </label>
+                                    <select class="form-select" id="id_business_category" name="business_category" required>
+                                        <option value="">Select a category...</option>
+                                        <option value="technology" {% if form.business_category.value == 'technology' %}selected{% endif %}>Technology</option>
+                                        <option value="education" {% if form.business_category.value == 'education' %}selected{% endif %}>Education</option>
+                                        <option value="arts" {% if form.business_category.value == 'arts' %}selected{% endif %}>Arts & Design</option>
+                                        <option value="business" {% if form.business_category.value == 'business' %}selected{% endif %}>Business</option>
+                                        <option value="health" {% if form.business_category.value == 'health' %}selected{% endif %}>Health & Wellness</option>
+                                        <option value="entertainment" {% if form.business_category.value == 'entertainment' %}selected{% endif %}>Entertainment</option>
+                                        <option value="other" {% if form.business_category.value == 'other' %}selected{% endif %}>Other</option>
+                                    </select>
+                                    {% if form.business_category.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.business_category.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_store_description" class="form-label fw-semibold">
+                                    Store Description<span class="required-star">*</span>
+                                </label>
+                                <textarea class="form-control" 
+                                          id="id_store_description" 
+                                          name="store_description"
+                                          rows="4" 
+                                          placeholder="Describe what you offer to customers..."
+                                          required>{% if form.store_description.value %}{{ form.store_description.value }}{% endif %}</textarea>
+                                <div class="form-text">Tell customers what makes your store special</div>
+                                {% if form.store_description.errors %}
+                                    <div class="text-danger mt-1 small">{{ form.store_description.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_years_in_business" class="form-label fw-semibold">Years in Business</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="id_years_in_business" 
+                                       name="years_in_business"
+                                       value="{% if form.years_in_business.value %}{{ form.years_in_business.value }}{% endif %}"
+                                       min="0" 
+                                       max="50" 
+                                       placeholder="0">
+                                <div class="form-text">How long have you been in business? (Optional)</div>
+                                {% if form.years_in_business.errors %}
+                                    <div class="text-danger mt-1 small">{{ form.years_in_business.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <div></div>
+                            <button type="button" class="btn btn-gradient next-step">
+                                Next: Branding <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Branding Card -->
+                    <div class="card form-card form-step d-none" id="step-2">
+                        <div class="card-header">
+                            <h5 class="form-section-title">
+                                <i class="fas fa-palette"></i>Step 2: Branding & Design
+                            </h5>
+                            <p class="text-muted mb-0">Upload your logo, banner, and choose your brand colors</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_store_logo" class="form-label fw-semibold">Store Logo</label>
+                                    <div class="file-upload-zone">
+                                        <i class="fas fa-image text-muted" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                        <p class="mb-2"><strong>Click to upload</strong> or drag and drop</p>
+                                        <p class="text-muted small mb-0">PNG, JPG up to 2MB</p>
+                                        <input type="file" 
+                                               id="id_store_logo" 
+                                               name="store_logo"
+                                               accept="image/*">
+                                    </div>
+                                    <div class="form-text">Square images work best (e.g., 200x200px)</div>
+                                    {% if form.store_logo.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.store_logo.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_store_banner" class="form-label fw-semibold">Store Banner</label>
+                                    <div class="file-upload-zone">
+                                        <i class="fas fa-image text-muted" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                        <p class="mb-2"><strong>Click to upload</strong> or drag and drop</p>
+                                        <p class="text-muted small mb-0">PNG, JPG up to 5MB</p>
+                                        <input type="file" 
+                                               id="id_store_banner" 
+                                               name="store_banner"
+                                               accept="image/*">
+                                    </div>
+                                    <div class="form-text">Wide images work best (e.g., 1200x400px)</div>
+                                    {% if form.store_banner.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.store_banner.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_primary_color" class="form-label fw-semibold">Primary Color</label>
+                                    <div class="color-input-group">
+                                        <div class="color-preview">
+                                            <input type="color" 
+                                                   id="id_primary_color" 
+                                                   name="primary_color"
+                                                   value="{% if form.primary_color.value %}{{ form.primary_color.value }}{% else %}#3B82F6{% endif %}">
+                                        </div>
+                                        <span class="form-text">Used for buttons and accents</span>
+                                    </div>
+                                    {% if form.primary_color.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.primary_color.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_secondary_color" class="form-label fw-semibold">Secondary Color</label>
+                                    <div class="color-input-group">
+                                        <div class="color-preview">
+                                            <input type="color" 
+                                                   id="id_secondary_color" 
+                                                   name="secondary_color"
+                                                   value="{% if form.secondary_color.value %}{{ form.secondary_color.value }}{% else %}#6B7280{% endif %}">
+                                        </div>
+                                        <span class="form-text">Used for secondary elements</span>
+                                    </div>
+                                    {% if form.secondary_color.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.secondary_color.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary prev-step">
+                                <i class="fas fa-arrow-left me-2"></i>Previous
+                            </button>
+                            <button type="button" class="btn btn-gradient next-step">
+                                Next: Banking <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Banking Information Card -->
+                    <div class="card form-card form-step d-none" id="step-3">
+                        <div class="card-header">
+                            <h5 class="form-section-title">
+                                <i class="fas fa-university"></i>Step 3: Banking Information
+                            </h5>
+                            <p class="text-muted mb-0">Add your banking details to receive payments securely</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info d-flex align-items-center mb-4">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                <div>Your banking information is encrypted and secure. This is required for payouts.</div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_bank_name" class="form-label fw-semibold">
+                                        Bank Name<span class="required-star">*</span>
+                                    </label>
+                                    <select class="form-select" id="id_bank_name" name="bank_name" required>
+                                        <option value="">Select your bank...</option>
+                                        <option value="fnb" {% if form.bank_name.value == 'fnb' %}selected{% endif %}>First National Bank (FNB)</option>
+                                        <option value="absa" {% if form.bank_name.value == 'absa' %}selected{% endif %}>Absa Bank</option>
+                                        <option value="standard" {% if form.bank_name.value == 'standard' %}selected{% endif %}>Standard Bank</option>
+                                        <option value="nedbank" {% if form.bank_name.value == 'nedbank' %}selected{% endif %}>Nedbank</option>
+                                        <option value="capitec" {% if form.bank_name.value == 'capitec' %}selected{% endif %}>Capitec Bank</option>
+                                        <option value="other" {% if form.bank_name.value == 'other' %}selected{% endif %}>Other</option>
+                                    </select>
+                                    {% if form.bank_name.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.bank_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_account_type" class="form-label fw-semibold">
+                                        Account Type<span class="required-star">*</span>
+                                    </label>
+                                    <select class="form-select" id="id_account_type" name="account_type" required>
+                                        <option value="">Select account type...</option>
+                                        <option value="current" {% if form.account_type.value == 'current' %}selected{% endif %}>Current Account</option>
+                                        <option value="savings" {% if form.account_type.value == 'savings' %}selected{% endif %}>Savings Account</option>
+                                        <option value="business" {% if form.account_type.value == 'business' %}selected{% endif %}>Business Account</option>
+                                    </select>
+                                    {% if form.account_type.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.account_type.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_account_holder" class="form-label fw-semibold">
+                                        Account Holder Name<span class="required-star">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="id_account_holder" 
+                                           name="account_holder"
+                                           value="{% if form.account_holder.value %}{{ form.account_holder.value }}{% endif %}"
+                                           placeholder="Full name as it appears on bank account" 
+                                           required>
+                                    {% if form.account_holder.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.account_holder.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_branch_code" class="form-label fw-semibold">
+                                        Branch Code<span class="required-star">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="id_branch_code" 
+                                           name="branch_code"
+                                           value="{% if form.branch_code.value %}{{ form.branch_code.value }}{% endif %}"
+                                           placeholder="123456" 
+                                           maxlength="6"
+                                           required>
+                                    <div class="form-text">6-digit branch code</div>
+                                    {% if form.branch_code.errors %}
+                                        <div class="text-danger mt-1 small">{{ form.branch_code.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_account_number" class="form-label fw-semibold">
+                                    Account Number<span class="required-star">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="id_account_number" 
+                                       name="account_number"
+                                       value="{% if form.account_number.value %}{{ form.account_number.value }}{% endif %}"
+                                       placeholder="Bank account number" 
+                                       maxlength="12"
+                                       required>
+                                <div class="form-text">8-12 digit bank account number</div>
+                                {% if form.account_number.errors %}
+                                    <div class="text-danger mt-1 small">{{ form.account_number.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary prev-step">
+                                <i class="fas fa-arrow-left me-2"></i>Previous
+                            </button>
+                            <button type="button" class="btn btn-gradient next-step">
+                                Review & Submit <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Terms and Submit -->
+                    <div class="card form-card form-step d-none" id="step-4">
+                        <div class="card-header">
+                            <h5 class="form-section-title">
+                                <i class="fas fa-check-circle"></i>Review & Submit
+                            </h5>
+                            <p class="text-muted mb-0">Review your information and accept terms to complete setup</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check">
+                                <input type="checkbox" 
+                                       class="form-check-input" 
+                                       id="id_terms_accepted" 
+                                       name="terms_accepted"
+                                       {% if form.terms_accepted.value %}checked{% endif %}
+                                       required>
+                                <label class="form-check-label" for="id_terms_accepted">
+                                    I accept the <a href="#" target="_blank" class="text-decoration-none">Terms and Conditions</a> 
+                                    and <a href="#" target="_blank" class="text-decoration-none">Creator Agreement</a><span class="required-star">*</span>
+                                </label>
+                            </div>
+                            {% if form.terms_accepted.errors %}
+                                <div class="text-danger mt-1 small">{{ form.terms_accepted.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary prev-step">
+                                <i class="fas fa-arrow-left me-2"></i>Previous
+                            </button>
+                            <button type="submit" class="btn btn-gradient">
+                                <i class="fas fa-save me-2"></i>Complete Setup
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cancel Button -->
+                    <div class="d-flex justify-content-center mt-4">
+                        <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel Setup
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="card sidebar-card">
+                        <div class="card-body">
+                            <h5 class="card-title d-flex align-items-center mb-3">
+                                <i class="fas fa-lightbulb text-warning me-2"></i>Tips for Success
+                            </h5>
+                            <ul class="help-list">
+                                <li>
+                                    <i class="fas fa-check-circle help-icon"></i>
+                                    <div>
+                                        <strong>Clear Store Name:</strong> Choose a memorable name that reflects your brand
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-circle help-icon"></i>
+                                    <div>
+                                        <strong>Detailed Description:</strong> Explain what makes your products unique
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-circle help-icon"></i>
+                                    <div>
+                                        <strong>Professional Images:</strong> Use high-quality logos and banners
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-circle help-icon"></i>
+                                    <div>
+                                        <strong>Accurate Banking:</strong> Double-check your banking details for payouts
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card sidebar-card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title d-flex align-items-center justify-content-center mb-3">
+                                <i class="fas fa-question-circle text-info me-2"></i>Need Help?
+                            </h5>
+                            <p class="mb-3">Having trouble with your profile setup?</p>
+                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-headset me-2"></i>Contact Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentStep = 1;
+    const totalSteps = 4;
+    
+    // Initialize form
+    showStep(currentStep);
+    updateProgressIndicator();
+    
+    // Next step buttons
+    document.querySelectorAll('.next-step').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (validateCurrentStep()) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    showStep(currentStep);
+                    updateProgressIndicator();
+                    scrollToTop();
+                }
+            }
+        });
+    });
+    
+    // Previous step buttons
+    document.querySelectorAll('.prev-step').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+                updateProgressIndicator();
+                scrollToTop();
+            }
+        });
+    });
+    
+    // Progress step clicks
+    document.querySelectorAll('.progress-step').forEach((step, index) => {
+        step.addEventListener('click', function() {
+            const stepNumber = index + 1;
+            if (stepNumber <= currentStep || canNavigateToStep(stepNumber)) {
+                currentStep = stepNumber;
+                showStep(currentStep);
+                updateProgressIndicator();
+                scrollToTop();
+            }
+        });
+    });
+    
+    function showStep(step) {
+        // Hide all steps
+        document.querySelectorAll('.form-step').forEach(stepEl => {
+            stepEl.classList.add('d-none');
+        });
+        
+        // Show current step
+        const currentStepEl = document.getElementById(`step-${step}`);
+        if (currentStepEl) {
+            currentStepEl.classList.remove('d-none');
+        }
+    }
+    
+    function updateProgressIndicator() {
+        document.querySelectorAll('.progress-step').forEach((step, index) => {
+            const stepNumber = index + 1;
+            const number = step.querySelector('.progress-number');
+            const check = step.querySelector('.progress-check');
+            
+            // Reset classes
+            step.classList.remove('active', 'completed');
+            
+            if (stepNumber < currentStep) {
+                // Completed step
+                step.classList.add('completed');
+                if (number) number.classList.add('d-none');
+                if (check) check.classList.remove('d-none');
+            } else if (stepNumber === currentStep) {
+                // Active step
+                step.classList.add('active');
+                if (number) number.classList.remove('d-none');
+                if (check) check.classList.add('d-none');
+            } else {
+                // Future step
+                if (number) number.classList.remove('d-none');
+                if (check) check.classList.add('d-none');
+            }
+        });
+        
+        // Update progress line
+        const progressLine = document.querySelector('.progress-line');
+        if (progressLine) {
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            progressLine.style.background = `linear-gradient(to right, #667eea 0%, #667eea ${progress}%, #e2e8f0 ${progress}%, #e2e8f0 100%)`;
+        }
+    }
+    
+    function validateCurrentStep() {
+        const currentStepEl = document.getElementById(`step-${currentStep}`);
+        if (!currentStepEl) return true;
+        
+        const requiredFields = currentStepEl.querySelectorAll('input[required], select[required], textarea[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            showAlert('Please fill in all required fields before proceeding.', 'warning');
+        }
+        
+        return isValid;
+    }
+    
+    function canNavigateToStep(stepNumber) {
+        return stepNumber <= currentStep;
+    }
+    
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+    
+    function showAlert(message, type = 'info') {
+        // Remove existing alerts
+        document.querySelectorAll('.step-alert').forEach(alert => alert.remove());
+        
+        // Create new alert
+        const alertEl = document.createElement('div');
+        alertEl.className = `alert alert-${type} alert-dismissible fade show step-alert`;
+        alertEl.innerHTML = `
+            <i class="fas fa-${type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        // Insert alert at top of form
+        const container = document.querySelector('.creator-form-container .container');
+        const progressContainer = container.querySelector('.progress-container');
+        if (container && progressContainer) {
+            container.insertBefore(alertEl, progressContainer.nextSibling);
+        }
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertEl.parentElement) {
+                alertEl.remove();
+            }
+        }, 5000);
+    }
+    
+    // File upload preview functionality
+    function setupFilePreview(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        input.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const uploadZone = this.closest('.file-upload-zone');
+            
+            if (file && uploadZone) {
+                // Remove existing preview
+                const existingPreview = uploadZone.querySelector('.file-preview');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+
+                // Create preview element
+                const preview = document.createElement('div');
+                preview.className = 'file-preview mt-2 text-center';
+                
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.style.maxWidth = '80px';
+                    img.style.maxHeight = '80px';
+                    img.style.borderRadius = '8px';
+                    img.style.objectFit = 'cover';
+                    img.style.border = '2px solid #e2e8f0';
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    const fileName = document.createElement('div');
+                    fileName.className = 'text-success small mt-1';
+                    fileName.innerHTML = `<i class="fas fa-check-circle me-1"></i>${file.name}`;
+                    
+                    preview.appendChild(img);
+                    preview.appendChild(fileName);
+                } else {
+                    preview.innerHTML = `<div class="text-success"><i class="fas fa-check-circle me-1"></i>File selected: ${file.name}</div>`;
+                }
+                
+                uploadZone.appendChild(preview);
+            }
+        });
+    }
+
+    // Setup file previews
+    setupFilePreview('id_store_logo');
+    setupFilePreview('id_store_banner');
+
+    // Form submission with validation
+    const form = document.getElementById('creatorProfileForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Final validation of all steps
+            let allValid = true;
+            const allRequiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+            
+            allRequiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    allValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!allValid) {
+                e.preventDefault();
+                showAlert('Please complete all required fields before submitting.', 'warning');
+                
+                // Navigate to first step with errors
+                for (let step = 1; step <= totalSteps; step++) {
+                    const stepEl = document.getElementById(`step-${step}`);
+                    if (stepEl && stepEl.querySelector('.is-invalid')) {
+                        currentStep = step;
+                        showStep(currentStep);
+                        updateProgressIndicator();
+                        scrollToTop();
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    // Account number formatting
+    const accountNumberInput = document.getElementById('id_account_number');
+    if (accountNumberInput) {
+        accountNumberInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+    }
+
+    // Branch code formatting
+    const branchCodeInput = document.getElementById('id_branch_code');
+    if (branchCodeInput) {
+        branchCodeInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,445 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Digitera{% endblock %}
+
+{% block main_classes %}bg-gray-50{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-4">
+            <li>
+                <a href="{% url 'home' %}" class="text-gray-500 hover:text-gray-700">Home</a>
+            </li>
+            <li>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </li>
+            <li>
+                <a href="{% url 'products:marketplace' %}" class="text-gray-500 hover:text-gray-700">Products</a>
+            </li>
+            <li>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </li>
+            <li>
+                <span class="text-gray-900 font-medium">{{ product.name }}</span>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+            <!-- Product Images -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+                {% if product.cover_image %}
+                <div class="aspect-w-16 aspect-h-9">
+                    <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" 
+                         class="w-full h-96 object-cover rounded-t-lg">
+                </div>
+                {% else %}
+                <div class="h-96 bg-gradient-to-br from-blue-100 to-purple-100 rounded-t-lg flex items-center justify-center">
+                    <div class="text-center">
+                        <i class="fas fa-image text-6xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-500">No preview image</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Preview Gallery -->
+                {% if product.preview_files.exists %}
+                <div class="p-4 border-t">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Preview Files</h3>
+                    <div class="grid grid-cols-4 gap-2">
+                        {% for preview in product.preview_files.all %}
+                        <div class="aspect-w-1 aspect-h-1">
+                            {% if preview.file_type == 'image' %}
+                            <img src="{{ preview.file.url }}" alt="Preview" 
+                                 class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75">
+                            {% else %}
+                            <div class="w-full h-20 bg-gray-100 rounded flex items-center justify-center cursor-pointer hover:bg-gray-200">
+                                <i class="fas fa-file text-gray-400 text-xl"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Product Details -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ product.name }}</h1>
+                        <div class="flex items-center space-x-4 text-sm text-gray-600">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ product.get_category_display }}
+                            </span>
+                            <span class="flex items-center">
+                                <i class="fas fa-user mr-1"></i>
+                                {{ product.creator.get_full_name|default:product.creator.username }}
+                            </span>
+                            <span class="flex items-center">
+                                <i class="fas fa-calendar mr-1"></i>
+                                {{ product.created_at|date:"M d, Y" }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Creator Actions -->
+                    {% if user == product.creator %}
+                    <div class="flex items-center space-x-2">
+                        <a href="{% url 'products:creator_edit' product.id %}" 
+                           class="px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
+                            <i class="fas fa-edit mr-1"></i>
+                            Edit
+                        </a>
+                        <button onclick="toggleDropdown('actions-dropdown')" 
+                                class="px-3 py-2 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 transition duration-200">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div id="actions-dropdown" class="hidden absolute right-0 mt-12 w-48 bg-white rounded-md shadow-lg z-10">
+                            <a href="{% url 'products:creator_analytics' product.id %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-chart-bar mr-2"></i>Analytics
+                            </a>
+                            <a href="{% url 'products:creator_duplicate' product.id %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-copy mr-2"></i>Duplicate
+                            </a>
+                            <a href="{% url 'products:creator_delete' product.id %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-trash mr-2"></i>Delete
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div class="prose max-w-none">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-3">About This Product</h2>
+                    <div class="text-gray-700 leading-relaxed">
+                        {{ product.description|linebreaks }}
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                {% if product.tags %}
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Tags</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for tag in product.tags_list %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            {{ tag }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- File Information -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">What's Included</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for file in product.product_files.all %}
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-file text-blue-600"></i>
+                            </div>
+                            <div class="ml-3 flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">{{ file.original_filename }}</p>
+                                <p class="text-sm text-gray-500">{{ file.file_size|filesizeformat }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900">Customer Reviews</h2>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex items-center">
+                            {% for i in "12345" %}
+                            <i class="fas fa-star text-yellow-400"></i>
+                            {% endfor %}
+                        </div>
+                        <span class="text-sm text-gray-600">({{ product.reviews.count }} reviews)</span>
+                    </div>
+                </div>
+
+                {% if product.reviews.exists %}
+                <div class="space-y-6">
+                    {% for review in product.reviews.all %}
+                    <div class="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-sm font-medium text-blue-800">
+                                        {{ review.user.first_name|first|upper }}{{ review.user.last_name|first|upper }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <h4 class="text-sm font-medium text-gray-900">{{ review.user.get_full_name|default:review.user.username }}</h4>
+                                    <div class="flex items-center">
+                                        {% for i in "12345" %}
+                                        <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                        {% endfor %}
+                                    </div>
+                                    <span class="text-sm text-gray-500">{{ review.created_at|timesince }} ago</span>
+                                </div>
+                                <p class="text-gray-700">{{ review.comment }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-comment-alt text-4xl text-gray-300 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No reviews yet</h3>
+                    <p class="text-gray-500">Be the first to review this product!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Purchase Card -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
+                <div class="text-center mb-6">
+                    <div class="text-3xl font-bold text-gray-900 mb-2">
+                        R{{ product.price|floatformat:2 }}
+                    </div>
+                    <p class="text-sm text-gray-600">One-time purchase</p>
+                </div>
+
+                {% if user != product.creator %}
+                <div class="space-y-4">
+                    {% if user.is_authenticated %}
+                    <button onclick="addToCart('{{ product.id }}')" 
+                            class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition duration-200 font-medium">
+                        <i class="fas fa-shopping-cart mr-2"></i>
+                        Add to Cart
+                    </button>
+                    <button onclick="buyNow('{{ product.id }}')" 
+                            class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition duration-200 font-medium">
+                        <i class="fas fa-bolt mr-2"></i>
+                        Buy Now
+                    </button>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}?next={{ request.path }}" 
+                       class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition duration-200 font-medium text-center block">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Login to Purchase
+                    </a>
+                    {% endif %}
+                    
+                    <button onclick="addToWishlist('{{ product.id }}')" 
+                            class="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-md hover:bg-gray-50 transition duration-200 font-medium">
+                        <i class="fas fa-heart mr-2"></i>
+                        Add to Wishlist
+                    </button>
+                </div>
+                {% endif %}
+
+                <!-- Product Info -->
+                <div class="mt-6 pt-6 border-t border-gray-200 space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">File Size:</span>
+                        <span class="font-medium">{{ product.total_file_size|filesizeformat }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Downloads:</span>
+                        <span class="font-medium">{{ product.download_count }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Last Updated:</span>
+                        <span class="font-medium">{{ product.updated_at|date:"M d, Y" }}</span>
+                    </div>
+                    {% if product.license_included %}
+                    <div class="flex items-center text-green-600">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span>Commercial License Included</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Money-back Guarantee -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div class="flex items-center text-sm text-gray-600">
+                        <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+                        <span>30-day money-back guarantee</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Creator Info -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">About the Creator</h3>
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-lg font-medium text-blue-800">
+                            {{ product.creator.first_name|first|upper }}{{ product.creator.last_name|first|upper }}
+                        </span>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-900">{{ product.creator.get_full_name|default:product.creator.username }}</h4>
+                        <p class="text-sm text-gray-600">Digital Creator</p>
+                    </div>
+                </div>
+                
+                {% if product.creator.profile.bio %}
+                <p class="text-sm text-gray-700 mb-4">{{ product.creator.profile.bio|truncatewords:20 }}</p>
+                {% endif %}
+                
+                <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+                    <span>{{ product.creator.products.count }} Products</span>
+                    <span>⭐ 4.8 Rating</span>
+                </div>
+                
+                <a href="{% url 'accounts:creator_profile' creator_id=product.creator.pk %}" 
+                   class="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition duration-200 text-center block">
+                    View Profile
+                </a>
+            </div>
+
+            <!-- Related Products -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">More from this Creator</h3>
+                <div class="space-y-4">
+                    {% for related in product.creator.products.all|slice:":3" %}
+                    {% if related != product %}
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gray-100 rounded flex-shrink-0">
+                            {% if related.cover_image %}
+                            <img src="{{ related.cover_image.url }}" alt="{{ related.name }}" 
+                                 class="w-full h-full object-cover rounded">
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center">
+                                <i class="fas fa-image text-gray-400"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <a href="{% url 'products:detail' related.id %}" 
+                               class="text-sm font-medium text-gray-900 hover:text-blue-600 block truncate">
+                                {{ related.name }}
+                            </a>
+                            <p class="text-sm text-gray-600">R{{ related.price|floatformat:2 }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleDropdown(id) {
+    const dropdown = document.getElementById(id);
+    dropdown.classList.toggle('hidden');
+}
+
+function addToCart(productId) {
+    // Show loading state
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Adding...';
+    button.disabled = true;
+    
+    fetch(`{% url 'orders:add_to_cart' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', productId), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: 'quantity=1'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            button.innerHTML = '<i class="fas fa-check mr-2"></i>Added to Cart!';
+            button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            button.classList.add('bg-green-600');
+            
+            // Update cart count if element exists
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount) {
+                cartCount.textContent = data.cart_total_items;
+            }
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                button.classList.remove('bg-green-600');
+                button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            }, 2000);
+        } else {
+            alert(data.message || 'Error adding to cart');
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding to cart');
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+function buyNow(productId) {
+    // Show loading state
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+    button.disabled = true;
+    
+    // Redirect to buy now
+    window.location.href = `{% url 'orders:buy_now' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', productId);
+}
+
+function addToWishlist(productId) {
+    // Add to wishlist functionality
+    console.log('Adding to wishlist:', productId);
+    // You can implement actual wishlist logic here
+    alert('Wishlist functionality coming soon!');
+}
+
+// Get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('actions-dropdown');
+    if (dropdown && !dropdown.contains(event.target) && !event.target.closest('button')) {
+        dropdown.classList.add('hidden');
+    }
+});
+</script>
+{% endblock %}

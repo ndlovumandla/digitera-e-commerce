@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Storefront - Digitera{% endblock %}
+
+{% block main_classes %}bg-gray-50{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center space-x-4 mb-4">
+            <a href="{% url 'storefronts:list' %}" class="text-gray-600 hover:text-gray-900">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-900">Create New Storefront</h1>
+        </div>
+        <p class="text-gray-600">
+            Build your personalized digital storefront to showcase and sell your products with your own branding.
+        </p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="mb-8">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">1</div>
+                <span class="text-blue-600 font-medium">Basic Info</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-gray-200"></div>
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium">2</div>
+                <span class="text-gray-600">Design & Branding</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-gray-200"></div>
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium">3</div>
+                <span class="text-gray-600">Launch</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+        
+        <!-- Basic Information -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-6">Basic Information</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                    <label for="id_name" class="block text-sm font-medium text-gray-700 mb-2">Storefront Name *</label>
+                    <input type="text" name="name" id="id_name" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="My Awesome Digital Store">
+                    <p class="mt-1 text-sm text-gray-500">This will be the main title of your storefront.</p>
+                </div>
+
+                <div>
+                    <label for="id_slug" class="block text-sm font-medium text-gray-700 mb-2">URL Slug *</label>
+                    <div class="flex items-center">
+                        <input type="text" name="slug" id="id_slug" required
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="my-store">
+                        <span class="bg-gray-50 border border-l-0 border-gray-300 rounded-r-md px-3 py-2 text-sm text-gray-600">
+                            .digitera.co.za
+                        </span>
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">Choose a unique URL for your storefront.</p>
+                </div>
+
+                <div>
+                    <label for="id_category" class="block text-sm font-medium text-gray-700 mb-2">Primary Category</label>
+                    <select name="category" id="id_category"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select a category</option>
+                        <option value="design">Design & Graphics</option>
+                        <option value="education">Education & Training</option>
+                        <option value="business">Business & Marketing</option>
+                        <option value="technology">Technology & Software</option>
+                        <option value="creative">Creative & Arts</option>
+                        <option value="health">Health & Wellness</option>
+                        <option value="lifestyle">Lifestyle & Personal</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="id_description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea name="description" id="id_description" rows="4"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Tell customers about your store, what types of products you offer, and what makes you special..."></textarea>
+                    <p class="mt-1 text-sm text-gray-500">This will appear on your storefront homepage and in search results.</p>
+                </div>
+
+                <div>
+                    <label for="id_contact_email" class="block text-sm font-medium text-gray-700 mb-2">Contact Email</label>
+                    <input type="email" name="contact_email" id="id_contact_email"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="contact@mystore.com">
+                    <p class="mt-1 text-sm text-gray-500">Customers can reach you at this email address.</p>
+                </div>
+
+                <div>
+                    <label for="id_phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input type="tel" name="phone" id="id_phone"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="+27 11 123 4567">
+                    <p class="mt-1 text-sm text-gray-500">Optional: South African phone number for customer support.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Branding & Design -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-6">Branding & Design</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="id_logo" class="block text-sm font-medium text-gray-700 mb-2">Logo</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition duration-200">
+                        <input type="file" name="logo" id="id_logo" accept="image/*" class="hidden">
+                        <label for="id_logo" class="cursor-pointer">
+                            <i class="fas fa-image text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700 mb-2">Upload Logo</p>
+                            <p class="text-sm text-gray-500">PNG, JPG up to 5MB. Recommended: 200x200px</p>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="id_header_image" class="block text-sm font-medium text-gray-700 mb-2">Header Banner</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition duration-200">
+                        <input type="file" name="header_image" id="id_header_image" accept="image/*" class="hidden">
+                        <label for="id_header_image" class="cursor-pointer">
+                            <i class="fas fa-panorama text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700 mb-2">Upload Banner</p>
+                            <p class="text-sm text-gray-500">PNG, JPG up to 10MB. Recommended: 1200x400px</p>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-4">Color Scheme</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <label for="id_primary_color" class="block text-xs font-medium text-gray-600 mb-2">Primary Color</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="color" name="primary_color" id="id_primary_color" value="#3B82F6"
+                                       class="w-12 h-10 border border-gray-300 rounded cursor-pointer">
+                                <input type="text" value="#3B82F6" 
+                                       class="flex-1 px-2 py-1 text-sm border border-gray-300 rounded">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="id_secondary_color" class="block text-xs font-medium text-gray-600 mb-2">Secondary Color</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="color" name="secondary_color" id="id_secondary_color" value="#10B981"
+                                       class="w-12 h-10 border border-gray-300 rounded cursor-pointer">
+                                <input type="text" value="#10B981" 
+                                       class="flex-1 px-2 py-1 text-sm border border-gray-300 rounded">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="id_accent_color" class="block text-xs font-medium text-gray-600 mb-2">Accent Color</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="color" name="accent_color" id="id_accent_color" value="#F59E0B"
+                                       class="w-12 h-10 border border-gray-300 rounded cursor-pointer">
+                                <input type="text" value="#F59E0B" 
+                                       class="flex-1 px-2 py-1 text-sm border border-gray-300 rounded">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="id_text_color" class="block text-xs font-medium text-gray-600 mb-2">Text Color</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="color" name="text_color" id="id_text_color" value="#1F2937"
+                                       class="w-12 h-10 border border-gray-300 rounded cursor-pointer">
+                                <input type="text" value="#1F2937" 
+                                       class="flex-1 px-2 py-1 text-sm border border-gray-300 rounded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="id_custom_css" class="block text-sm font-medium text-gray-700 mb-2">Custom CSS (Advanced)</label>
+                    <textarea name="custom_css" id="id_custom_css" rows="4"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                              placeholder="/* Add your custom CSS here */"></textarea>
+                    <p class="mt-1 text-sm text-gray-500">Advanced users can add custom styling to further personalize their storefront.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Media & SEO -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-6">Social Media & SEO</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="id_facebook_url" class="block text-sm font-medium text-gray-700 mb-2">Facebook Page</label>
+                    <div class="flex items-center">
+                        <span class="bg-gray-50 border border-r-0 border-gray-300 rounded-l-md px-3 py-2 text-sm text-gray-600">
+                            <i class="fab fa-facebook-f"></i>
+                        </span>
+                        <input type="url" name="facebook_url" id="id_facebook_url"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="https://facebook.com/yourpage">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="id_twitter_url" class="block text-sm font-medium text-gray-700 mb-2">Twitter Profile</label>
+                    <div class="flex items-center">
+                        <span class="bg-gray-50 border border-r-0 border-gray-300 rounded-l-md px-3 py-2 text-sm text-gray-600">
+                            <i class="fab fa-twitter"></i>
+                        </span>
+                        <input type="url" name="twitter_url" id="id_twitter_url"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="https://twitter.com/yourusername">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="id_instagram_url" class="block text-sm font-medium text-gray-700 mb-2">Instagram Profile</label>
+                    <div class="flex items-center">
+                        <span class="bg-gray-50 border border-r-0 border-gray-300 rounded-l-md px-3 py-2 text-sm text-gray-600">
+                            <i class="fab fa-instagram"></i>
+                        </span>
+                        <input type="url" name="instagram_url" id="id_instagram_url"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="https://instagram.com/yourusername">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="id_linkedin_url" class="block text-sm font-medium text-gray-700 mb-2">LinkedIn Profile</label>
+                    <div class="flex items-center">
+                        <span class="bg-gray-50 border border-r-0 border-gray-300 rounded-l-md px-3 py-2 text-sm text-gray-600">
+                            <i class="fab fa-linkedin-in"></i>
+                        </span>
+                        <input type="url" name="linkedin_url" id="id_linkedin_url"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="https://linkedin.com/in/yourprofile">
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="id_seo_keywords" class="block text-sm font-medium text-gray-700 mb-2">SEO Keywords</label>
+                    <input type="text" name="seo_keywords" id="id_seo_keywords"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="digital products, design, templates, south africa">
+                    <p class="mt-1 text-sm text-gray-500">Keywords that describe your store and products (separated by commas).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-6">Store Settings</h2>
+            
+            <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-900">Accept Custom Orders</h3>
+                        <p class="text-sm text-gray-600">Allow customers to request custom work beyond your listed products</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="accepts_custom_orders" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-900">Featured Store</h3>
+                        <p class="text-sm text-gray-600">Request to be featured in Digitera's marketplace highlights</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="request_featured" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-900">Newsletter Integration</h3>
+                        <p class="text-sm text-gray-600">Collect customer emails for marketing and updates</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="newsletter_enabled" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-900">Analytics Tracking</h3>
+                        <p class="text-sm text-gray-600">Enable detailed visitor and sales analytics</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="analytics_enabled" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- South African Compliance -->
+        <div class="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6">
+            <div class="flex items-start space-x-3">
+                <i class="fas fa-flag text-green-600 mt-1"></i>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">🇿🇦 South African Compliance</h3>
+                    <div class="space-y-2 text-sm text-gray-700">
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" name="terms_agreed" required id="id_terms" class="rounded border-gray-300">
+                            <label for="id_terms">I agree to Digitera's Terms of Service and Privacy Policy</label>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" name="popia_consent" required id="id_popia" class="rounded border-gray-300">
+                            <label for="id_popia">I consent to data processing in accordance with POPIA</label>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" name="vat_understanding" required id="id_vat" class="rounded border-gray-300">
+                            <label for="id_vat">I understand VAT obligations for digital product sales in South Africa</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+            <a href="{% url 'storefronts:list' %}" 
+               class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
+                Cancel
+            </a>
+            
+            <div class="flex items-center space-x-4">
+                <button type="submit" name="action" value="save_draft"
+                        class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
+                    <i class="fas fa-save mr-2"></i>
+                    Save as Draft
+                </button>
+                <button type="submit" name="action" value="create_active"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Create & Launch
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+// Auto-generate slug from name
+document.getElementById('id_name').addEventListener('input', function(e) {
+    const name = e.target.value;
+    const slug = name.toLowerCase()
+        .replace(/[^\w\s-]/g, '') // Remove special characters
+        .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+        .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+    document.getElementById('id_slug').value = slug;
+});
+
+// Color picker sync
+document.querySelectorAll('input[type="color"]').forEach(function(colorInput) {
+    const textInput = colorInput.parentElement.querySelector('input[type="text"]');
+    
+    colorInput.addEventListener('change', function(e) {
+        textInput.value = e.target.value;
+    });
+    
+    textInput.addEventListener('input', function(e) {
+        if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+            colorInput.value = e.target.value;
+        }
+    });
+});
+
+// File upload preview
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInputs = ['id_logo', 'id_header_image'];
+    
+    fileInputs.forEach(function(inputId) {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.addEventListener('change', function(e) {
+                const label = input.nextElementSibling;
+                const file = e.target.files[0];
+                if (file) {
+                    const icon = label.querySelector('i');
+                    const title = label.querySelector('p');
+                    icon.className = 'fas fa-check-circle text-4xl text-green-500 mb-4';
+                    title.textContent = `Selected: ${file.name}`;
+                    title.className = 'text-lg font-medium text-green-700 mb-2';
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

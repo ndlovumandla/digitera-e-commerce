@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Add New Product - Digitera{% endblock %}
+
+{% block main_classes %}min-h-screen bg-gray-50{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center space-x-4 mb-4">
+            <a href="{% url 'accounts:dashboard' %}" class="text-gray-600 hover:text-gray-900">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-900">Add New Product</h1>
+        </div>
+        <p class="text-gray-600">
+            Upload your digital product and start selling to customers across South Africa.
+        </p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="mb-8">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">1</div>
+                <span class="text-blue-600 font-medium">Product Details</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-gray-200"></div>
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium">2</div>
+                <span class="text-gray-600">Files & Pricing</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-gray-200"></div>
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium">3</div>
+                <span class="text-gray-600">Review & Publish</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+        
+        <!-- Basic Information -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-6">Basic Information</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                    <label for="id_name" class="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
+                    <input type="text" name="name" id="id_name" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Enter a clear, descriptive product name">
+                    <p class="mt-1 text-sm text-gray-500">Choose a name that clearly describes what customers will get.</p>
+                </div>
+
+                <div>
+                    <label for="id_category" class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                    <select name="category" id="id_category" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select a category</option>
+                        <option value="ebooks">E-books & Guides</option>
+                        <option value="courses">Online Courses</option>
+                        <option value="templates">Templates & Themes</option>
+                        <option value="software">Software & Apps</option>
+                        <option value="graphics">Graphics & Design</option>
+                        <option value="audio">Audio & Music</option>
+                        <option value="video">Video Content</option>
+                        <option value="photography">Photography</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_price" class="block text-sm font-medium text-gray-700 mb-2">Price (ZAR) *</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">R</span>
+                        </div>
+                        <input type="number" name="price" id="id_price" step="0.01" min="0" required
+                               class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="0.00">
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">Recommended: R50 - R500 for most digital products.</p>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="id_description" class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                    <textarea name="description" id="id_description" rows="4" required
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Describe what customers will get, how it helps them, and any important details..."></textarea>
+                    <p class="mt-1 text-sm text-gray-500">Be specific about what's included and the value it provides.</p>
+                </div>
+
+                <div>
+                    <label for="id_tags" class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                    <input type="text" name="tags" id="id_tags"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="design, business, productivity">
+                    <p class="mt-1 text-sm text-gray-500">Separate tags with commas to help customers find your product.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center">
+                            <input type="radio" name="status" value="draft" checked class="mr-2">
+                            <span class="text-sm text-gray-700">Draft</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="status" value="active" class="mr-2">
+                            <span class="text-sm text-gray-700">Publish Immediately</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Files -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-6">Product Files</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <label for="id_cover_image" class="block text-sm font-medium text-gray-700 mb-2">Cover Image *</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition duration-200">
+                        <input type="file" name="cover_image" id="id_cover_image" accept="image/*" required class="hidden">
+                        <label for="id_cover_image" class="cursor-pointer">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700 mb-2">Upload Cover Image</p>
+                            <p class="text-sm text-gray-500">PNG, JPG up to 10MB. Recommended: 800x600px</p>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="id_product_files" class="block text-sm font-medium text-gray-700 mb-2">Product Files *</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition duration-200">
+                        <input type="file" name="product_files" id="id_product_files" multiple required class="hidden">
+                        <label for="id_product_files" class="cursor-pointer">
+                            <i class="fas fa-file-upload text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700 mb-2">Upload Product Files</p>
+                            <p class="text-sm text-gray-500">Any file type, up to 100MB each. These are the files customers will receive.</p>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="id_preview_files" class="block text-sm font-medium text-gray-700 mb-2">Preview Files (Optional)</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition duration-200">
+                        <input type="file" name="preview_files" id="id_preview_files" multiple class="hidden">
+                        <label for="id_preview_files" class="cursor-pointer">
+                            <i class="fas fa-eye text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700 mb-2">Upload Preview Files</p>
+                            <p class="text-sm text-gray-500">Sample pages, screenshots, or demos to show potential customers.</p>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Settings -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-6">Additional Settings</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="flex items-center space-x-3">
+                        <input type="checkbox" name="unlimited_downloads" class="rounded border-gray-300">
+                        <div>
+                            <span class="text-sm font-medium text-gray-700">Unlimited Downloads</span>
+                            <p class="text-sm text-gray-500">Allow customers to re-download files anytime</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div>
+                    <label class="flex items-center space-x-3">
+                        <input type="checkbox" name="license_included" class="rounded border-gray-300">
+                        <div>
+                            <span class="text-sm font-medium text-gray-700">Commercial License</span>
+                            <p class="text-sm text-gray-500">Include commercial use rights</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div>
+                    <label for="id_download_limit" class="block text-sm font-medium text-gray-700 mb-2">Download Limit</label>
+                    <input type="number" name="download_limit" id="id_download_limit" min="1" value="3"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <p class="mt-1 text-sm text-gray-500">Maximum downloads per purchase (0 = unlimited)</p>
+                </div>
+
+                <div>
+                    <label for="id_expiry_days" class="block text-sm font-medium text-gray-700 mb-2">Download Expiry (Days)</label>
+                    <input type="number" name="expiry_days" id="id_expiry_days" min="1" value="365"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <p class="mt-1 text-sm text-gray-500">How long customers can download files (0 = no expiry)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- South African Compliance -->
+        <div class="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6">
+            <div class="flex items-start space-x-3">
+                <i class="fas fa-flag text-green-600 mt-1"></i>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">🇿🇦 South African Compliance</h3>
+                    <div class="space-y-2 text-sm text-gray-700">
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" name="vat_compliant" required id="id_vat" class="rounded border-gray-300">
+                            <label for="id_vat">I understand VAT may apply to digital products sold in South Africa</label>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" name="popia_compliant" required id="id_popia" class="rounded border-gray-300">
+                            <label for="id_popia">This product complies with POPIA data protection requirements</label>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" name="original_content" required id="id_original" class="rounded border-gray-300">
+                            <label for="id_original">I confirm this is my original content or I have proper licensing rights</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+            <a href="{% url 'accounts:dashboard' %}" 
+               class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
+                Cancel
+            </a>
+            
+            <div class="flex items-center space-x-4">
+                <button type="submit" name="action" value="save_draft"
+                        class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
+                    <i class="fas fa-save mr-2"></i>
+                    Save as Draft
+                </button>
+                <button type="submit" name="action" value="publish"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Publish Product
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+// File upload preview
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInputs = ['id_cover_image', 'id_product_files', 'id_preview_files'];
+    
+    fileInputs.forEach(function(inputId) {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.addEventListener('change', function(e) {
+                const label = input.nextElementSibling;
+                const files = e.target.files;
+                if (files.length > 0) {
+                    const fileNames = Array.from(files).map(f => f.name).join(', ');
+                    const icon = label.querySelector('i');
+                    const title = label.querySelector('p');
+                    icon.className = 'fas fa-check-circle text-4xl text-green-500 mb-4';
+                    title.textContent = `Selected: ${fileNames}`;
+                    title.className = 'text-lg font-medium text-green-700 mb-2';
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Creator Dashboard - Digitera{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Creator Dashboard</h1>
+                    <p class="text-sm text-gray-600">Welcome back, {{ user.first_name }}!</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if store_url %}
+                        <a href="{{ store_url }}" target="_blank" 
+                           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-external-link-alt mr-2"></i>
+                            View Store
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-box text-blue-600 text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Products</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ total_products }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-chart-line text-green-600 text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Total Sales</p>
+                        <p class="text-2xl font-bold text-gray-900">R{{ total_sales|floatformat:2 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-users text-purple-600 text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Customers</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ creator_profile.total_customers|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-star text-yellow-600 text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Rating</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ creator_profile.rating|floatformat:1|default:"5.0" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+                    <div class="space-y-3">
+                        <a href="{% url 'products:creator_create' %}" 
+                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50">
+                            <i class="fas fa-plus-circle text-blue-600 mr-3"></i>
+                            <div>
+                                <p class="font-medium text-gray-900">Add New Product</p>
+                                <p class="text-sm text-gray-600">Create and publish a new digital product</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'storefronts:edit' user.creator_profile.store_slug %}" 
+                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50">
+                            <i class="fas fa-palette text-purple-600 mr-3"></i>
+                            <div>
+                                <p class="font-medium text-gray-900">Customize Storefront</p>
+                                <p class="text-sm text-gray-600">Update your store's look and feel</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'analytics:dashboard' %}" 
+                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50">
+                            <i class="fas fa-chart-bar text-green-600 mr-3"></i>
+                            <div>
+                                <p class="font-medium text-gray-900">View Analytics</p>
+                                <p class="text-sm text-gray-600">Track sales and customer insights</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'marketing:packages' %}" 
+                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-orange-500 hover:bg-orange-50">
+                            <i class="fas fa-megaphone text-orange-600 mr-3"></i>
+                            <div>
+                                <p class="font-medium text-gray-900">Marketing Tools</p>
+                                <p class="text-sm text-gray-600">Promote your products and grow sales</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                            <p class="text-sm text-gray-600">Store setup completed</p>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                            <p class="text-sm text-gray-600">Profile created and verified</p>
+                        </div>
+                        {% if total_products > 0 %}
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                            <p class="text-sm text-gray-600">First product published</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Getting Started Section -->
+        {% if total_products == 0 %}
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <div class="flex items-start">
+                <i class="fas fa-lightbulb text-blue-600 text-xl mr-4 mt-1"></i>
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-900 mb-2">Ready to start selling?</h3>
+                    <p class="text-blue-800 mb-4">
+                        You've successfully set up your creator account! Now it's time to add your first product and start generating income.
+                    </p>
+                    <a href="{% url 'products:creator_create' %}" 
+                       class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Your First Product
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

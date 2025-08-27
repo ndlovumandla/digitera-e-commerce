@@ -1,0 +1,529 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile Settings - Digitera{% endblock %}
+
+{% block description %}Update your Digitera profile information and preferences{% endblock %}
+
+{% block main_classes %}py-8{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Profile Settings</h1>
+                <p class="mt-2 text-gray-600">Manage your account information and preferences</p>
+            </div>
+            <div class="flex space-x-3">
+                {% if not user.is_creator %}
+                    <a href="{% url 'accounts:upgrade_to_creator' %}" 
+                       class="inline-flex items-center px-4 py-2 bg-green-600 text-sm font-medium rounded-md text-white hover:bg-green-700 transition duration-300">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Become a Creator
+                    </a>
+                {% endif %}
+                <a href="{% url 'accounts:dashboard' %}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-300">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="border-b border-gray-200 mb-8">
+        <nav class="-mb-px flex space-x-8">
+            <button onclick="showTab('basic')" id="basic-tab" 
+                    class="tab-button border-b-2 border-digitera-blue text-digitera-blue py-2 px-1 border-b-2 font-medium text-sm">
+                Basic Information
+            </button>
+            <button onclick="showTab('contact')" id="contact-tab" 
+                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 border-b-2 font-medium text-sm">
+                Contact & Address
+            </button>
+            <button onclick="showTab('preferences')" id="preferences-tab" 
+                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 border-b-2 font-medium text-sm">
+                Preferences
+            </button>
+            <button onclick="showTab('security')" id="security-tab" 
+                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 border-b-2 font-medium text-sm">
+                Security
+            </button>
+        </nav>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+        
+        <!-- Basic Information Tab -->
+        <div id="basic-content" class="tab-content">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6">Basic Information</h3>
+                    
+                    <!-- Profile Picture -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
+                        <div class="flex items-center space-x-6">
+                            <div class="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+                                {% if user.userprofile.profile_picture %}
+                                    <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="w-full h-full object-cover">
+                                {% else %}
+                                    <span class="text-xl font-bold text-gray-600">
+                                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                {{ user_form.profile_picture }}
+                                <p class="mt-1 text-xs text-gray-500">JPG, PNG or GIF. Max size 2MB.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- First Name -->
+                        <div>
+                            <label for="id_first_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                First Name <span class="text-red-500">*</span>
+                            </label>
+                            {{ user_form.first_name }}
+                            {% if user_form.first_name.errors %}
+                                <div class="mt-1">
+                                    {% for error in user_form.first_name.errors %}
+                                        <p class="text-sm text-red-600">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Last Name -->
+                        <div>
+                            <label for="id_last_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                Last Name <span class="text-red-500">*</span>
+                            </label>
+                            {{ user_form.last_name }}
+                            {% if user_form.last_name.errors %}
+                                <div class="mt-1">
+                                    {% for error in user_form.last_name.errors %}
+                                        <p class="text-sm text-red-600">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label for="id_email" class="block text-sm font-medium text-gray-700 mb-1">
+                                Email Address <span class="text-red-500">*</span>
+                            </label>
+                            {{ user_form.email }}
+                            {% if user_form.email.errors %}
+                                <div class="mt-1">
+                                    {% for error in user_form.email.errors %}
+                                        <p class="text-sm text-red-600">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if not user.email_verified %}
+                                <p class="mt-1 text-xs text-orange-600">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    Email not verified. <a href="{% url 'account_email' %}" class="underline">Verify now</a>
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div>
+                            <label for="id_phone_number" class="block text-sm font-medium text-gray-700 mb-1">
+                                Phone Number
+                            </label>
+                            {{ profile_form.phone_number }}
+                            {% if profile_form.phone_number.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.phone_number.errors %}
+                                        <p class="text-sm text-red-600">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <p class="mt-1 text-xs text-gray-500">
+                                🇿🇦 South African format (e.g., +27 82 123 4567)
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="mt-6">
+                        <label for="id_bio" class="block text-sm font-medium text-gray-700 mb-1">
+                            Bio
+                        </label>
+                        {{ profile_form.bio }}
+                        {% if profile_form.bio.errors %}
+                            <div class="mt-1">
+                                {% for error in profile_form.bio.errors %}
+                                    <p class="text-sm text-red-600">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">
+                            Tell other users about yourself (optional)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact & Address Tab -->
+        <div id="contact-content" class="tab-content hidden">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6">Contact & Address Information</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Province -->
+                        <div>
+                            <label for="id_province" class="block text-sm font-medium text-gray-700 mb-1">
+                                Province
+                            </label>
+                            {{ profile_form.province }}
+                            {% if profile_form.province.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.province.errors %}
+                                        <p class="text-sm text-red-600">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- City -->
+                        <div>
+                            <label for="id_city" class="block text-sm font-medium text-gray-700 mb-1">
+                                City
+                            </label>
+                            {{ profile_form.city }}
+                            {% if profile_form.city.errors %}
+                                <div class="mt-1">
+                                    {% for error in profile_form.city.errors %}
+                                        <p class="text-sm text-red-600">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Address Line 1 -->
+                    <div class="mt-6">
+                        <label for="id_address_line_1" class="block text-sm font-medium text-gray-700 mb-1">
+                            Address Line 1
+                        </label>
+                        {{ profile_form.address_line_1 }}
+                        {% if profile_form.address_line_1.errors %}
+                            <div class="mt-1">
+                                {% for error in profile_form.address_line_1.errors %}
+                                    <p class="text-sm text-red-600">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Address Line 2 -->
+                    <div class="mt-6">
+                        <label for="id_address_line_2" class="block text-sm font-medium text-gray-700 mb-1">
+                            Address Line 2 (Optional)
+                        </label>
+                        {{ profile_form.address_line_2 }}
+                        {% if profile_form.address_line_2.errors %}
+                            <div class="mt-1">
+                                {% for error in profile_form.address_line_2.errors %}
+                                    <p class="text-sm text-red-600">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Postal Code -->
+                    <div class="mt-6">
+                        <label for="id_postal_code" class="block text-sm font-medium text-gray-700 mb-1">
+                            Postal Code
+                        </label>
+                        {{ profile_form.postal_code }}
+                        {% if profile_form.postal_code.errors %}
+                            <div class="mt-1">
+                                {% for error in profile_form.postal_code.errors %}
+                                    <p class="text-sm text-red-600">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">
+                            South African postal code (e.g., 2000, 7700)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferences Tab -->
+        <div id="preferences-content" class="tab-content hidden">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6">Preferences</h3>
+                    
+                    <!-- Language -->
+                    <div class="mb-6">
+                        <label for="id_preferred_language" class="block text-sm font-medium text-gray-700 mb-1">
+                            Preferred Language
+                        </label>
+                        {{ profile_form.preferred_language }}
+                        {% if profile_form.preferred_language.errors %}
+                            <div class="mt-1">
+                                {% for error in profile_form.preferred_language.errors %}
+                                    <p class="text-sm text-red-600">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">
+                            🇿🇦 Choose your preferred language for the platform
+                        </p>
+                    </div>
+
+                    <!-- Currency -->
+                    <div class="mb-6">
+                        <label for="id_currency" class="block text-sm font-medium text-gray-700 mb-1">
+                            Currency
+                        </label>
+                        {{ profile_form.currency }}
+                        {% if profile_form.currency.errors %}
+                            <div class="mt-1">
+                                {% for error in profile_form.currency.errors %}
+                                    <p class="text-sm text-red-600">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">
+                            Your preferred currency for displaying prices
+                        </p>
+                    </div>
+
+                    <!-- Timezone -->
+                    <div class="mb-6">
+                        <label for="id_timezone" class="block text-sm font-medium text-gray-700 mb-1">
+                            Timezone
+                        </label>
+                        {{ profile_form.timezone }}
+                        {% if profile_form.timezone.errors %}
+                            <div class="mt-1">
+                                {% for error in profile_form.timezone.errors %}
+                                    <p class="text-sm text-red-600">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Email Notifications -->
+                    <div class="mb-6">
+                        <h4 class="text-md font-medium text-gray-900 mb-4">Email Notifications</h4>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="flex items-center h-5">
+                                    {{ profile_form.email_notifications }}
+                                </div>
+                                <div class="ml-3">
+                                    <label class="text-sm text-gray-700">
+                                        Receive email notifications about account activity, new features, and important updates
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex items-center h-5">
+                                    {{ profile_form.marketing_emails }}
+                                </div>
+                                <div class="ml-3">
+                                    <label class="text-sm text-gray-700">
+                                        Receive marketing emails about special offers, new products, and South African market insights
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Tab -->
+        <div id="security-content" class="tab-content hidden">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6">Security Settings</h3>
+                    
+                    <!-- Two-Factor Authentication -->
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-md font-medium text-gray-900">Two-Factor Authentication</h4>
+                                <p class="text-sm text-gray-500">Add an extra layer of security to your account</p>
+                            </div>
+                            <div>
+                                {% if user.userprofile.two_factor_enabled %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-check mr-1"></i>
+                                        Enabled
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                        <i class="fas fa-times mr-1"></i>
+                                        Disabled
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <a href="{% url 'accounts:two_factor_setup' %}" 
+                               class="bg-digitera-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">
+                                {% if user.userprofile.two_factor_enabled %}
+                                    <i class="fas fa-cog mr-2"></i>Manage 2FA
+                                {% else %}
+                                    <i class="fas fa-shield-alt mr-2"></i>Enable 2FA
+                                {% endif %}
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Password Change -->
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-md font-medium text-gray-900">Password</h4>
+                                <p class="text-sm text-gray-500">Change your account password</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <a href="{% url 'account_change_password' %}" 
+                               class="border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition duration-300">
+                                <i class="fas fa-key mr-2"></i>Change Password
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Connected Accounts -->
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-md font-medium text-gray-900">Connected Accounts</h4>
+                                <p class="text-sm text-gray-500">Manage your social login connections</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <a href="{% url 'socialaccount_connections' %}" 
+                               class="border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition duration-300">
+                                <i class="fas fa-link mr-2"></i>Manage Connections
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Account Deletion -->
+                    <div class="border-t border-gray-200 pt-8">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-md font-medium text-red-900">Delete Account</h4>
+                                <p class="text-sm text-gray-500">Permanently delete your account and all data</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="button" onclick="confirmAccountDeletion()"
+                                    class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300">
+                                <i class="fas fa-trash mr-2"></i>Delete Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="flex justify-end pt-8">
+            <button type="submit" 
+                    class="bg-digitera-blue text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-digitera-blue transition duration-300">
+                <i class="fas fa-save mr-2"></i>
+                Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function showTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(function(content) {
+            content.classList.add('hidden');
+        });
+        
+        // Remove active styling from all tabs
+        document.querySelectorAll('.tab-button').forEach(function(button) {
+            button.classList.remove('border-digitera-blue', 'text-digitera-blue');
+            button.classList.add('border-transparent', 'text-gray-500');
+        });
+        
+        // Show selected tab content
+        document.getElementById(tabName + '-content').classList.remove('hidden');
+        
+        // Add active styling to selected tab
+        const activeTab = document.getElementById(tabName + '-tab');
+        activeTab.classList.remove('border-transparent', 'text-gray-500');
+        activeTab.classList.add('border-digitera-blue', 'text-digitera-blue');
+    }
+
+    function confirmAccountDeletion() {
+        if (confirm('Are you absolutely sure you want to delete your account? This action cannot be undone and will permanently delete all your data, products, and sales history.')) {
+            if (confirm('This is your final warning. Type "DELETE" to confirm account deletion.')) {
+                const confirmation = prompt('Type "DELETE" to confirm:');
+                if (confirmation === 'DELETE') {
+                    // Redirect to account deletion endpoint
+                    window.location.href = '{% url "accounts:delete_account" %}';
+                } else {
+                    alert('Account deletion cancelled.');
+                }
+            }
+        }
+    }
+
+    // File upload preview
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'file' && e.target.accept.includes('image')) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Update profile picture preview if exists
+                    const preview = document.querySelector('img[alt="Profile"]');
+                    if (preview) {
+                        preview.src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+
+    // Auto-save indicator
+    let changesMade = false;
+    document.addEventListener('input', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            changesMade = true;
+        }
+    });
+
+    window.addEventListener('beforeunload', function(e) {
+        if (changesMade) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+
+    // Form submission removes the beforeunload warning
+    document.querySelector('form').addEventListener('submit', function() {
+        changesMade = false;
+    });
+</script>
+{% endblock %}
